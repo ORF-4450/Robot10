@@ -1,5 +1,5 @@
 // 2017 competition robot code.
-// For Robot "tba" built for FRC game "First SteamWorks".
+// For Robot "tba" built for FRC game "First STEAMWorks".
 
 package Team4450.Robot10;
 
