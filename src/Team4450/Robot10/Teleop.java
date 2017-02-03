@@ -81,6 +81,7 @@ class Teleop
 		lpControl.controlType = LaunchPadControlTypes.SWITCH;
 
 		launchPad.AddControl(LaunchPadControlIDs.BUTTON_YELLOW);
+		launchPad.AddControl(LaunchPadControlIDs.BUTTON_RED_RIGHT);
         launchPad.addLaunchPadEventListener(new LaunchPadListener());
         launchPad.Start();
 
@@ -107,6 +108,9 @@ class Teleop
         // Set gyro to heading 0.
         robot.gyro.reset();
 
+        //robot.navx.resetYaw();
+        //robot.navx.dumpValuesToNetworkTables();
+        
         // Motor safety turned on.
         robot.robotDrive.setSafetyEnabled(true);
         
@@ -133,6 +137,7 @@ class Teleop
 			
 			LCD.printLine(4, "leftY=%.4f  rightY=%.4f utilX=%.4f", leftY, rightY, utilX);
 			LCD.printLine(5, "gyroAngle=%d, gyroRate=%d", (int) robot.gyro.getAngle(), (int) robot.gyro.getRate());
+			//LCD.printLine(6, "yaw=%.0f, total=%.0f, rate=%.3f", robot.navx.getYaw(), robot.navx.getTotalYaw(), robot.navx.getYawRate());
 			
 			// Set wheel motors.
 			// Do not feed JS input to robotDrive if we are controlling the motors in automatic functions.
@@ -260,6 +265,9 @@ class Teleop
 
     				break;
     				
+				case BUTTON_RED_RIGHT:
+					robot.navx.resetYaw();
+				
 				default:
 					break;
 			}

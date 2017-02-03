@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.Talon;
+//import edu.wpi.first.wpilibj.Talon;
 
 import com.ctre.*;
 import com.ctre.CANTalon.*;
@@ -30,11 +30,11 @@ import com.ctre.CANTalon.*;
 
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC10-01.20.17-01";
+  static final String  	PROGRAM_NAME = "RAC10-02.02.17-01";
 
   // Motor CAN ID/PWM port assignments (1=left-front, 2=left-rear, 3=right-front, 4=right-rear)
   CANTalon				LFCanTalon, LRCanTalon, RFCanTalon, RRCanTalon, LSlaveCanTalon, RSlaveCanTalon;
-  Talon					LFPwmTalon, LRPwmTalon, RFPwmTalon, RRPwmTalon;
+  //Talon					LFPwmTalon, LRPwmTalon, RFPwmTalon, RRPwmTalon;
   RobotDrive      		robotDrive;
   
   final Joystick        utilityStick = new Joystick(2);	// 0 old ds configuration
@@ -59,6 +59,8 @@ public class Robot extends SampleRobot
     
   Thread               	monitorBatteryThread, monitorDistanceThread, monitorCompressorThread;
   CameraFeed			cameraThread;
+  
+  NavX					navx;
     
   // Constructor.
   
@@ -141,18 +143,13 @@ public class Robot extends SampleRobot
         robotDrive.setInvertedMotor(RobotDrive.MotorType.kFrontRight, true);
         robotDrive.setInvertedMotor(RobotDrive.MotorType.kRearRight, true);
      
-        // calibrate the gyro if used.
+        // calibrate the gyro if used. Takes several seconds.
         
 //        gyro.initGyro();
 //        gyro.setSensitivity(.007);	// Analog Devices model ADSR-S652.
 //        gyro.calibrate();
 
-   		// Force camera IP addr set by robot button on DS to ON. We start with
-        // camera IP set here and operator can use button on DS to fall back to
-        // standard setting of camera IP from robot IP by the Dashboard code.
-   		SmartDashboard.putBoolean("CameraByRobot", true);
-        
-   		// Start the battery, compressor, camera feed and distance monitoring Tasks.
+   		// Start the battery, compressor and camera feed monitoring Tasks.
 
    		monitorBatteryThread = MonitorBattery.getInstance(ds);
    		monitorBatteryThread.start();
@@ -169,6 +166,10 @@ public class Robot extends SampleRobot
    		
    		//monitorDistanceThread = MonitorDistanceMBX.getInstance(this);
    		//monitorDistanceThread.start();
+   		
+   		// Create NavX object here so it has time to calibrate before we
+   		// use it. Takes 10 seconds.
+   		//navx = NavX.getInstance();
    		
    		Util.consoleLog("end");
     }
@@ -330,19 +331,19 @@ public class Robot extends SampleRobot
 
   // Create RobotDrive object for PWM controllers.
   
-  private void InitializePWMTalonDrive()
-  {
-	  Util.consoleLog();
-
-	  LFPwmTalon = new Talon(3);
-	  LRPwmTalon = new Talon(4);
-	  RFPwmTalon = new Talon(5);
-	  RRPwmTalon = new Talon(6);
-	 
-	  robotDrive = new RobotDrive(LFPwmTalon, LRPwmTalon, RFPwmTalon, RRPwmTalon);
-	  
-	  Util.consoleLog("end");
-  }
+//  private void InitializePWMTalonDrive()
+//  {
+//	  Util.consoleLog();
+//
+//	  LFPwmTalon = new Talon(3);
+//	  LRPwmTalon = new Talon(4);
+//	  RFPwmTalon = new Talon(5);
+//	  RRPwmTalon = new Talon(6);
+//	 
+//	  robotDrive = new RobotDrive(LFPwmTalon, LRPwmTalon, RFPwmTalon, RRPwmTalon);
+//	  
+//	  Util.consoleLog("end");
+//  }
   
   // Initialize and Log status indication from CANTalon. If we see an exception
   // or a talon has low voltage value, it did not get recognized by the RR on start up.
