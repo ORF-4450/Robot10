@@ -1,0 +1,54 @@
+Port and Button Assignments.
+
+CAN Ports
+Port	Device			Description
+-----------------------------------------------------------------------------------
+1		CanTalon		Left front drive motor.
+2		CanTalon		Left rear drive motor.
+3		CanTalon		Right front drive motor.
+4		CanTalon		Right rear drive motor.
+5		CanTalon		Left slave drive motor (slaved to port 1).
+6		CanTalon		Right slave drive motor (slaved to port 3).
+
+PWM Ports
+Port	Device			Description
+-----------------------------------------------------------------------------------
+0		Talon			Ball pickup motor.
+1		Talon			Gear pickup motor.
+2		Talon			Shooter motor.
+
+PCM 0 Ports
+Port	Device			Description
+-----------------------------------------------------------------------------------
+0		ValveDA 0		A side high/low speed shifter.
+1		ValveDA	0		B side high/low speed shifter.
+
+
+Digital I/O Ports
+Port	Device			Description
+-----------------------------------------------------------------------------------
+
+
+Analog I/O Ports
+Port	Device			Description
+-----------------------------------------------------------------------------------
+0		Gyro			Center gyro for straight travel.
+
+Left Joystick
+Button Name				Function
+-----------------------------------------------------------------------------------
+
+
+Right Joystick
+Button Name				Function
+-----------------------------------------------------------------------------------
+
+
+Utility Joystick
+Button Name				Function
+-----------------------------------------------------------------------------------
+
+
+LaunchPad
+Button Name				Function
+-----------------------------------------------------------------------------------
