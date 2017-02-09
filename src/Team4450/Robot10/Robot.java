@@ -199,6 +199,8 @@ public class Robot extends SampleRobot
 		  SmartDashboard.putBoolean("ShooterMotor", false);
 		  SmartDashboard.putBoolean("GearPickupMotor", false);
 		  SmartDashboard.putBoolean("GearPickupDown", false);
+		  SmartDashboard.putBoolean("LowSpeed", false);
+		  SmartDashboard.putBoolean("Neutral", false);
 		  
 		  Util.consoleLog("end");
 	  }

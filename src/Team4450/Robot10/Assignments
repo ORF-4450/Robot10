@@ -20,8 +20,11 @@ Port	Device			Description
 PCM 0 Ports
 Port	Device			Description
 -----------------------------------------------------------------------------------
-0		ValveDA 0		A side high/low speed shifter.
-1		ValveDA	0		B side high/low speed shifter.
+0		ValveDA 0		A side high/low speed shifter. Set Low speed.
+1		ValveDA	0		B side high/low speed shifter. Set High speed.
+2		ValveDA 2		A side PTO shifter. Engage PTO.
+3		ValveDA 2		B side PTO shifter. Disendage PTO.
+4		ValveSA 1		Neutral shifter. Set neutral.
 
 
 Digital I/O Ports
