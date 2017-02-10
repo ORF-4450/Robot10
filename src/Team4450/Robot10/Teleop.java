@@ -22,11 +22,9 @@ class Teleop
 	private final Robot 		robot;
 	public  JoyStick			rightStick, leftStick, utilityStick;
 	public  LaunchPad			launchPad;
-	private final ValveDA		shifterValve = new ValveDA(2);
-	private final ValveDA		ptoValve = new ValveDA(0);
-	private boolean				ptoMode = false;
-	private boolean				autoTarget = false;
-
+	private	GearBox				gearBox;
+	private boolean				autoTarget;
+	
 	// Wheel encoder is plugged into dio port 1 - orange=+5v blue=signal, dio port 2 black=gnd yellow=signal. 
 	//private Encoder				encoder = new Encoder(1, 2, true, EncodingType.k4X);
 
@@ -39,6 +37,8 @@ class Teleop
 		Util.consoleLog();
 
 		this.robot = robot;
+		
+		gearBox = new GearBox(robot);
 	}
 
 	// Free all objects that need it.
@@ -51,8 +51,7 @@ class Teleop
 		if (rightStick != null) rightStick.dispose();
 		if (utilityStick != null) utilityStick.dispose();
 		if (launchPad != null) launchPad.dispose();
-		if (shifterValve != null) shifterValve.dispose();
-		if (ptoValve != null) ptoValve.dispose();
+		if (gearBox != null) gearBox.dispose();
 		//if (encoder != null) encoder.free();
 	}
 
@@ -70,8 +69,8 @@ class Teleop
 		
 		// Initial setting of air valves.
 
-		shifterLow();
-		ptoDisable();
+		gearBox.lowSpeed();
+		gearBox.disengagePTO();
 		
 		// Configure LaunchPad and Joystick event handlers.
 		
@@ -121,7 +120,7 @@ class Teleop
 			// Get joystick deflection and feed to robot drive object
 			// using calls to our JoyStick class.
 
-			if (ptoMode)
+			if (gearBox.isPTO())
 			{
 				rightY = utilityStick.GetY();
 
@@ -136,7 +135,7 @@ class Teleop
 			utilX = utilityStick.GetX();
 			
 			LCD.printLine(4, "leftY=%.4f  rightY=%.4f utilX=%.4f", leftY, rightY, utilX);
-			LCD.printLine(5, "gyroAngle=%d, gyroRate=%d", (int) robot.gyro.getAngle(), (int) robot.gyro.getRate());
+			//LCD.printLine(5, "gyroAngle=%d, gyroRate=%d", (int) robot.gyro.getAngle(), (int) robot.gyro.getRate());
 			//LCD.printLine(6, "yaw=%.0f, total=%.0f, rate=%.3f", robot.navx.getYaw(), robot.navx.getTotalYaw(), robot.navx.getYawRate());
 			
 			// Set wheel motors.
@@ -192,52 +191,6 @@ class Teleop
 		return joystickValue;
 	}
 	
-	// Transmission control functions.
-	
-	//--------------------------------------
-	void shifterLow()
-	{
-		Util.consoleLog();
-		
-		shifterValve.SetA();
-
-		SmartDashboard.putBoolean("Low", true);
-		SmartDashboard.putBoolean("High", false);
-	}
-
-	void shifterHigh()
-	{
-		Util.consoleLog();
-		
-		shifterValve.SetB();
-
-		SmartDashboard.putBoolean("Low", false);
-		SmartDashboard.putBoolean("High", true);
-	}
-	
-	//--------------------------------------
-	void ptoDisable()
-	{
-		Util.consoleLog();
-		
-		ptoMode = false;
-		
-		ptoValve.SetA();
-
-		SmartDashboard.putBoolean("PTO", false);
-	}
-	
-	void ptoEnable()
-	{
-		Util.consoleLog();
-		
-		ptoValve.SetB();
-
-		ptoMode = true;
-		
-		SmartDashboard.putBoolean("PTO", true);
-	}
-	
 	// Handle LaunchPad control events.
 	
 	public class LaunchPadListener implements LaunchPadEventListener 
@@ -257,16 +210,15 @@ class Teleop
 				case BUTTON_BLUE:
     				if (launchPadEvent.control.latchedState)
     				{
-    					shifterLow();
-    					ptoEnable();
+    					gearBox.engagePTO();
     				}
         			else
-        				ptoDisable();
+        				gearBox.disengagePTO();
 
     				break;
     				
-				case BUTTON_RED_RIGHT:
-					robot.navx.resetYaw();
+				//case BUTTON_RED_RIGHT:
+					//robot.navx.resetYaw();
 				
 				default:
 					break;
@@ -343,9 +295,9 @@ class Teleop
 			{
 				case TRIGGER:
 					if (button.latchedState)
-	    				shifterHigh();
+	    				gearBox.highSpeed();
 	    			else
-	    				shifterLow();
+	    				gearBox.lowSpeed();
 
 					break;
 					

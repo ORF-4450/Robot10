@@ -230,6 +230,7 @@ public class Robot extends SampleRobot
     	  // This code turns off the automatic compressor management if requested by DS.
     	  compressor.setClosedLoopControl(SmartDashboard.getBoolean("CompressorEnabled", true));
 
+    	  // Reset persistent fault flags in control system modules.
     	  PDP.clearStickyFaults();
     	  compressor.clearAllPCMStickyFaults();
     	  compressor1.clearAllPCMStickyFaults();
@@ -267,6 +268,7 @@ public class Robot extends SampleRobot
         
           Util.consoleLog("Alliance=%s, Location=%d, FMS=%b", alliance.name(), location, ds.isFMSAttached());
 
+    	  // Reset persistent fault flags in control system modules.
           PDP.clearStickyFaults();
           compressor.clearAllPCMStickyFaults();
        	  compressor1.clearAllPCMStickyFaults();

@@ -37,14 +37,17 @@ Port	Device			Description
 -----------------------------------------------------------------------------------
 0		Gyro			Center gyro for straight travel.
 
+
 Left Joystick
 Button Name				Function
 -----------------------------------------------------------------------------------
+Trigger					Toggle gearbox speed.
 
 
 Right Joystick
 Button Name				Function
 -----------------------------------------------------------------------------------
+Top_Left				Change camera view.
 
 
 Utility Joystick
@@ -55,3 +58,21 @@ Button Name				Function
 LaunchPad
 Button Name				Function
 -----------------------------------------------------------------------------------
+Rocker_Left_Back		Toggle CanTalong brake mode.
+Button_Blue				Toggle PTO mode.
+Button_Yellow			Change camera view.
+
+
+Dashboard Indicators/Controls
+Name					Type			Description
+-----------------------------------------------------------------------------------
+AutoTarget				boolean			True when targeting code is running.
+TargetLocked			boolean			True when targeting completed with target
+                                        detected.
+BallPickupMotor			boolean			True when ball pickup motor is running.
+ShooterMotor			boolean			True when shooter motor is running.
+GearPickupMotor			boolean			True when gear pickup motor is running.
+GearPickupDown			boolean			True when gear pickup is in the down pos.
+LowSpeed				boolean			True when low speed is selected.
+Neutral					boolean			True when gearbox is in neutral
+		  
