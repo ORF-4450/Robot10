@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class GearBox
 {
 	private Robot		robot;
-	private boolean		lowSpeed, neutral, pto;
+	private boolean		lowSpeed, neutral, pto, neutralSupported = false;
 	private ValveDA		highLowValve = new ValveDA(0);
 	private ValveDA		ptoValve = new ValveDA(2);
 	private ValveSA		neutralValve = new ValveSA(4);
@@ -52,9 +52,15 @@ public class GearBox
 		Util.consoleLog();
 
 		neutral = false;
-		
+
 		highLowValve.SetA();
 
+		if (neutralSupported)
+		{
+			// a delay may be needed here to let highLowValve move.
+			neutralValve.Open();
+		}
+		
 		lowSpeed = true;
 		
 		displayStatus();
@@ -68,9 +74,15 @@ public class GearBox
 		Util.consoleLog();
 
 		neutral = false;
-		
-		highLowValve.SetB();
 
+		if (neutralSupported)
+		{
+			neutralValve.Close();
+			// may need a delay here to neutralValve close.
+		}
+
+		highLowValve.SetB();
+		
 		lowSpeed = false;
 		
 		displayStatus();
@@ -84,7 +96,15 @@ public class GearBox
 		Util.consoleLog();
 
 		neutral = true;
-		lowSpeed = false;
+
+		if (neutralSupported)
+		{
+			neutralValve.Close();
+			
+			if (lowSpeed) highLowValve.SetB();
+
+			highLowValve.SetA();
+		}
 		
 		displayStatus();
 	}
@@ -146,5 +166,14 @@ public class GearBox
 	public boolean isNeutral()
 	{
 		return neutral;
+	}
+	
+	/**
+	 * Return availability of neutral state.
+	 * @return True if gearbox has neutral support, false if not.
+	 */
+	public boolean isNeutralSupported()
+	{
+		return neutralSupported;
 	}
 }
