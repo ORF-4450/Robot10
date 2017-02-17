@@ -24,11 +24,11 @@ Port	Device blk-pos	Description
                                                        sets neutral. Must already
                                                        be in high speed pos.
 1		ValveDA	0		B side high/low speed shifter. Set High speed.
-2		ValveDA 2		A side PTO shifter. Engage PTO.
-3		ValveDA 2		B side PTO shifter. Disendage PTO.
-4		ValveSA 3		Neutral shifter. On 3-pos cyl sets low speed when cyl is
-                                         already in high speed position.
-
+2		ValveDA 1		A side PTO shifter. Engage PTO.
+3		ValveDA 1		B side PTO shifter. Disendage PTO.
+4		ValveDA 2		A side neutral shifter. On 3-pos cyl sets low speed when cyl is
+                                        already in high speed position.
+5		VavleDA 2		B side not used. Blocked.
 
 Digital I/O Ports
 Port	Device			Description

@@ -10,10 +10,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class GearBox
 {
 	private Robot		robot;
-	private boolean		lowSpeed, neutral, pto, neutralSupported = false;
+	private boolean		lowSpeed, neutral, pto, neutralSupported = true;
 	private ValveDA		highLowValve = new ValveDA(0);
 	private ValveDA		ptoValve = new ValveDA(2);
-	private ValveSA		neutralValve = new ValveSA(4);
+	private ValveDA		neutralValve = new ValveDA(4);
 	
 	public GearBox	(Robot robot)
 	{

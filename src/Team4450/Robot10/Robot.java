@@ -30,7 +30,7 @@ import com.ctre.CANTalon.*;
 
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC10-02.11.17-01";
+  static final String  	PROGRAM_NAME = "RAC10-02.16.17-01";
 
   // Motor CAN ID/PWM port assignments (1=left-front, 2=left-rear, 3=right-front, 4=right-rear)
   CANTalon				LFCanTalon, LRCanTalon, RFCanTalon, RRCanTalon, LSlaveCanTalon, RSlaveCanTalon;
@@ -43,7 +43,7 @@ public class Robot extends SampleRobot
   final Joystick		launchPad = new Joystick(3);
   
   final Compressor		compressor = new Compressor(0);	// Compressor class represents the PCM. There are 2.
-  final Compressor		compressor1 = new Compressor(1);
+  //final Compressor		compressor1 = new Compressor(1);
   final AnalogGyro		gyro = new AnalogGyro(0);		// gyro must be plugged into analog port 0 or 1.
   
   public Properties		robotProperties;
@@ -123,8 +123,8 @@ public class Robot extends SampleRobot
    		// Reset PDB & PCM sticky faults.
       
    		PDP.clearStickyFaults();
-   		compressor.clearAllPCMStickyFaults();
-   		compressor1.clearAllPCMStickyFaults();
+   		//compressor.clearAllPCMStickyFaults();
+   		//compressor1.clearAllPCMStickyFaults();
 
    		// Configure motor controllers and RobotDrive.
    		
@@ -159,8 +159,8 @@ public class Robot extends SampleRobot
 
    		// Start camera server using our class for usb cameras.
       
-   		cameraThread = CameraFeed.getInstance(); 
-   		cameraThread.start();
+   		//cameraThread = CameraFeed.getInstance(); 
+   		//cameraThread.start();
    		
    		// Start thread to monitor distance sensor.
    		
@@ -228,12 +228,12 @@ public class Robot extends SampleRobot
     	  location = ds.getLocation();
 
     	  // This code turns off the automatic compressor management if requested by DS.
-    	  compressor.setClosedLoopControl(SmartDashboard.getBoolean("CompressorEnabled", true));
+    	  //compressor.setClosedLoopControl(SmartDashboard.getBoolean("CompressorEnabled", true));
 
     	  // Reset persistent fault flags in control system modules.
     	  PDP.clearStickyFaults();
     	  compressor.clearAllPCMStickyFaults();
-    	  compressor1.clearAllPCMStickyFaults();
+    	  //compressor1.clearAllPCMStickyFaults();
              
     	  // Start autonomous process contained in the Autonomous class.
         
@@ -271,10 +271,10 @@ public class Robot extends SampleRobot
     	  // Reset persistent fault flags in control system modules.
           PDP.clearStickyFaults();
           compressor.clearAllPCMStickyFaults();
-       	  compressor1.clearAllPCMStickyFaults();
+       	  //compressor1.clearAllPCMStickyFaults();
 
           // This code turns off the automatic compressor management if requested by DS.
-          compressor.setClosedLoopControl(SmartDashboard.getBoolean("CompressorEnabled", true));
+          //compressor.setClosedLoopControl(SmartDashboard.getBoolean("CompressorEnabled", true));
         
           // Start operator control process contained in the Teleop class.
         
@@ -329,9 +329,11 @@ public class Robot extends SampleRobot
       // Configure slave CAN Talons to follow the front L & R Talons.
       LSlaveCanTalon.changeControlMode(TalonControlMode.Follower);
       LSlaveCanTalon.set(LFCanTalon.getDeviceID());
+      LSlaveCanTalon.reverseOutput(true);
 
       RSlaveCanTalon.changeControlMode(TalonControlMode.Follower);
       RSlaveCanTalon.set(RFCanTalon.getDeviceID());
+      RSlaveCanTalon.reverseOutput(true);
       
       // Turn on brake mode for CAN Talons.
       SetCANTalonBrakeMode(true);

@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.Relay;
 
 class Teleop
 {
@@ -67,11 +66,6 @@ class Teleop
 		LCD.printLine(1, "Mode: OperatorControl");
 		LCD.printLine(2, "All=%s, Start=%d, FMS=%b", robot.alliance.name(), robot.location, robot.ds.isFMSAttached());
 		
-		// Initial setting of air valves.
-
-		gearBox.lowSpeed();
-		gearBox.disengagePTO();
-		
 		// Configure LaunchPad and Joystick event handlers.
 		
 		launchPad = new LaunchPad(robot.launchPad, LaunchPadControlIDs.BUTTON_BLUE, this);
@@ -122,9 +116,9 @@ class Teleop
 
 			if (gearBox.isPTO())
 			{
-				rightY = utilityStick.GetY();
+				leftY = utilityStick.GetY();
 
-				leftY = rightY;
+				rightY = 0;
 			} 
 			else
 			{
@@ -209,9 +203,7 @@ class Teleop
     				
 				case BUTTON_BLUE:
     				if (launchPadEvent.control.latchedState)
-    				{
     					gearBox.engagePTO();
-    				}
         			else
         				gearBox.disengagePTO();
 
