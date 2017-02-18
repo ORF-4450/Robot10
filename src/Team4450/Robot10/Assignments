@@ -62,20 +62,25 @@ Trigger					Toggle gearbox speed.
 Right Joystick
 Button Name				Function
 -----------------------------------------------------------------------------------
-Top_Left				Change camera view.
 
 
 Utility Joystick
 Button Name				Function
 -----------------------------------------------------------------------------------
-
+Trigger					Toggle despensing fuel to shooter.
+Top_Left				Toggles spining up fuel shooter wheel.
+Top_Right				Toggles intake motors.
 
 LaunchPad
 Button Name				Function
 -----------------------------------------------------------------------------------
-Rocker_Left_Back		Toggle CanTalong brake mode.
+Rocker_Left_Back			Toggle CanTalon brake mode.
+Rocker_Left_Front			Toggle camera view.
 Button_Blue				Toggle PTO mode.
-Button_Yellow			Change camera view.
+Button_Red				Toggles "gear wrist" piston.
+Button_Blue_Right			Set position of gear elevator to "Low" (To grab gear off of floor)
+Button_Yellow				Set position of gear elevator to "Middle" (To put gear on peg)
+Button_Red_Right			Set position of gear elevator to "Hight" (To bring elevator out of way of fuel intake)
 
 
 Dashboard Indicators/Controls
