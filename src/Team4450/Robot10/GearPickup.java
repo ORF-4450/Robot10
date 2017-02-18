@@ -6,12 +6,16 @@ package Team4450.Robot10;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import Team4450.Lib.Util;
+import Team4450.Lib.ValveDA;
 
 public class GearPickup
 {
 	private Robot		robot;
 	private Talon		motor = new Talon(1);
-
+	private boolean		pickupDown, pickupOut;
+	private ValveDA		pickupLiftValve = new ValveDA(6);
+	private ValveDA		pickupDeployValve = new ValveDA(1, 0);
+	
 	public GearPickup(Robot robot)
 	{
 		Util.consoleLog();
@@ -19,6 +23,10 @@ public class GearPickup
 		this.robot = robot;
 		
 		stop();
+		
+		pickupIn();
+		
+		raisePickup();
 	}
 	
 	public void dispose()
@@ -26,6 +34,8 @@ public class GearPickup
 		Util.consoleLog();
 		
 		if (motor != null) motor.free();
+		if (pickupLiftValve != null) pickupLiftValve.dispose();
+		if (pickupDeployValve != null) pickupDeployValve.dispose();
 	}
 	
 	public void startIn()
@@ -69,7 +79,11 @@ public class GearPickup
 
 		if (isPickupDown()) return;
 		
-		SmartDashboard.putBoolean("GearPickupDown", true);
+		pickupDown = true;
+		
+		pickupLiftValve.SetB();
+		
+		SmartDashboard.putBoolean("GearPickupDown", pickupDown);
 	}
 	
 	public void raisePickup()
@@ -78,11 +92,46 @@ public class GearPickup
 
 		if (!isPickupDown()) return;
 		
-		SmartDashboard.putBoolean("GearPickupDown", false);
+		pickupDown = false;
+		
+		pickupLiftValve.SetA();
+		
+		SmartDashboard.putBoolean("GearPickupDown", pickupDown);
 	}
 	
 	public boolean isPickupDown()
 	{
-		return false;
+		return pickupDown;
+	}
+	
+	public void pickupIn()
+	{
+		Util.consoleLog();
+
+		if (!isPickupOut()) return;
+		
+		pickupOut = false;
+		
+		pickupDeployValve.SetA();
+		
+		SmartDashboard.putBoolean("GearPickupDown", pickupOut);
+	}
+	
+	public void pickupOut()
+	{
+		Util.consoleLog();
+
+		if (isPickupOut()) return;
+		
+		pickupOut = true;
+		
+		pickupDeployValve.SetB();
+		
+		SmartDashboard.putBoolean("GearPickupDown", pickupOut);
+	}
+	
+	public boolean isPickupOut()
+	{
+		return pickupOut;
 	}
 }

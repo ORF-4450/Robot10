@@ -10,12 +10,15 @@ Port	Device			Description
 5		CanTalon		Left slave drive motor (slaved to port 1).
 6		CanTalon		Right slave drive motor (slaved to port 3).
 
+
 PWM Ports
 Port	Device			Description
 -----------------------------------------------------------------------------------
 0		Talon			Ball pickup motor.
 1		Talon			Gear pickup motor.
 2		Talon			Shooter motor.
+3		Talon			Shooter motor.
+
 
 PCM 0 Ports
 Port	Device blk-pos	Description
@@ -28,7 +31,16 @@ Port	Device blk-pos	Description
 3		ValveDA 1		B side PTO shifter. Disendage PTO.
 4		ValveDA 2		A side neutral shifter. On 3-pos cyl sets low speed when cyl is
                                         already in high speed position.
-5		VavleDA 2		B side not used. Blocked.
+5		VavleDA 2		B side not used. Blocked.	
+6		ValveDA 3		A side Gear pickup up position.
+7		ValveDA 3		B side Gear pickup down position.
+
+PCM 1 Ports
+Port	Device blk-pos	Description
+-----------------------------------------------------------------------------------
+0		ValveDA	4		A side Gear Pickup in position.
+1		VavleDA 4		B side Gear pickup out position.
+
 
 Digital I/O Ports
 Port	Device			Description
@@ -77,5 +89,6 @@ ShooterMotor			boolean			True when shooter motor is running.
 GearPickupMotor			boolean			True when gear pickup motor is running.
 GearPickupDown			boolean			True when gear pickup is in the down pos.
 LowSpeed				boolean			True when low speed is selected.
+HighSpeed				boolean			True when high speed is selected.
 Neutral					boolean			True when gearbox is in neutral
 		  

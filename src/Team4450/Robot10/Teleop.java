@@ -22,7 +22,7 @@ class Teleop
 	public  JoyStick			rightStick, leftStick, utilityStick;
 	public  LaunchPad			launchPad;
 	private	GearBox				gearBox;
-	private boolean				autoTarget;
+	private boolean				autoTarget, invertDrive;
 	
 	// Wheel encoder is plugged into dio port 1 - orange=+5v blue=signal, dio port 2 black=gnd yellow=signal. 
 	//private Encoder				encoder = new Encoder(1, 2, true, EncodingType.k4X);
@@ -120,6 +120,11 @@ class Teleop
 
 				rightY = 0;
 			} 
+			else if (invertDrive)
+			{
+				rightY = stickLogCorrection(rightStick.GetY() * -1);	// fwd/back right
+    			leftY = stickLogCorrection(leftStick.GetY() * -1);		// fwd/back left
+			}
 			else
 			{
 				rightY = stickLogCorrection(rightStick.GetY());	// fwd/back right

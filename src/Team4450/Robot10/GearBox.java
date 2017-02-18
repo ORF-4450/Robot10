@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class GearBox
 {
 	private Robot		robot;
-	private boolean		lowSpeed, neutral, pto, neutralSupported = true;
+	private boolean		lowSpeed, neutral, pto, highSpeed, neutralSupported = true;
 	private ValveDA		highLowValve = new ValveDA(0);
 	private ValveDA		ptoValve = new ValveDA(2);
 	private ValveDA		neutralValve = new ValveDA(4);
@@ -40,6 +40,7 @@ public class GearBox
 		Util.consoleLog("low=%b, neutral=%b, pto=%b", lowSpeed, neutral, pto);
 		
 		SmartDashboard.putBoolean("LowSpeed", lowSpeed);
+		SmartDashboard.putBoolean("HighSpeed", highSpeed);
 		SmartDashboard.putBoolean("Neutral", neutral);
 		SmartDashboard.putBoolean("PTO", pto);
 	}
@@ -51,15 +52,12 @@ public class GearBox
 	{
 		Util.consoleLog();
 
+		highSpeed = false;
 		neutral = false;
 
 		highLowValve.SetA();
 
-		if (neutralSupported)
-		{
-			// a delay may be needed here to let highLowValve move.
-			neutralValve.Open();
-		}
+		if (neutralSupported) neutralValve.Open();
 		
 		lowSpeed = true;
 		
@@ -74,16 +72,13 @@ public class GearBox
 		Util.consoleLog();
 
 		neutral = false;
-
-		if (neutralSupported)
-		{
-			neutralValve.Close();
-			// may need a delay here to neutralValve close.
-		}
+		lowSpeed = false;
+		
+		if (neutralSupported) neutralValve.Close();
 
 		highLowValve.SetB();
 		
-		lowSpeed = false;
+		highSpeed = true;
 		
 		displayStatus();
 	}
@@ -95,15 +90,20 @@ public class GearBox
 	{
 		Util.consoleLog();
 
-		neutral = true;
+		neutral = false;
 
 		if (neutralSupported)
 		{
+			lowSpeed = false;
+			highSpeed = false;
+			
 			neutralValve.Close();
 			
 			if (lowSpeed) highLowValve.SetB();
 
 			highLowValve.SetA();
+			
+			neutral = true;
 		}
 		
 		displayStatus();
@@ -151,12 +151,21 @@ public class GearBox
 	}
 	
 	/**
-	 * Return low/high speed state.
-	 * @return True if low speed, false if high speed.
+	 * Return low speed state.
+	 * @return True if low speed.
 	 */
 	public boolean isLowSpeed()
 	{
 		return lowSpeed;
+	}
+	
+	/**
+	 * Return high speed state.
+	 * @return True if high speed.
+	 */
+	public boolean isHighSpeed()
+	{
+		return highSpeed;
 	}
 	
 	/**
