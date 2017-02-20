@@ -23,6 +23,9 @@ class Teleop
 	public  LaunchPad			launchPad;
 	private	GearBox				gearBox;
 	private boolean				autoTarget, invertDrive;
+	private BallPickup			ballPickup;
+	private Shooter				shooter;
+	private GearPickup			gearPickup;
 	
 	// Wheel encoder is plugged into dio port 1 - orange=+5v blue=signal, dio port 2 black=gnd yellow=signal. 
 	//private Encoder				encoder = new Encoder(1, 2, true, EncodingType.k4X);
@@ -38,6 +41,12 @@ class Teleop
 		this.robot = robot;
 		
 		gearBox = new GearBox(robot);
+		
+		ballPickup = new BallPickup(robot);
+		
+		shooter = new Shooter(robot);
+		
+		gearPickup = new GearPickup(robot, this);
 	}
 
 	// Free all objects that need it.
@@ -51,6 +60,9 @@ class Teleop
 		if (utilityStick != null) utilityStick.dispose();
 		if (launchPad != null) launchPad.dispose();
 		if (gearBox != null) gearBox.dispose();
+		if (ballPickup != null) ballPickup.dispose();
+		if (shooter != null) shooter.dispose();
+		if (gearPickup != null) gearPickup.dispose();
 		//if (encoder != null) encoder.free();
 	}
 
@@ -72,9 +84,13 @@ class Teleop
 		
 		LaunchPadControl lpControl = launchPad.AddControl(LaunchPadControlIDs.ROCKER_LEFT_BACK);
 		lpControl.controlType = LaunchPadControlTypes.SWITCH;
+		lpControl = launchPad.AddControl(LaunchPadControlIDs.ROCKER_LEFT_FRONT);
+		lpControl.controlType = LaunchPadControlTypes.SWITCH;
 
 		launchPad.AddControl(LaunchPadControlIDs.BUTTON_YELLOW);
 		launchPad.AddControl(LaunchPadControlIDs.BUTTON_RED_RIGHT);
+		launchPad.AddControl(LaunchPadControlIDs.BUTTON_RED);
+		launchPad.AddControl(LaunchPadControlIDs.BUTTON_BLUE_RIGHT);
         launchPad.addLaunchPadEventListener(new LaunchPadListener());
         launchPad.Start();
 
@@ -87,6 +103,8 @@ class Teleop
         rightStick.Start();
         
 		utilityStick = new JoyStick(robot.utilityStick, "UtilityStick", JoyStickButtonIDs.TRIGGER, this);
+		utilityStick.AddButton(JoyStickButtonIDs.TOP_LEFT);
+		utilityStick.AddButton(JoyStickButtonIDs.TOP_RIGHT);
         utilityStick.addJoyStickEventListener(new UtilityStickListener());
         utilityStick.Start();
         
@@ -203,7 +221,11 @@ class Teleop
 			switch(control.id)
 			{
 				case BUTTON_YELLOW:
-					robot.cameraThread.ChangeCamera();
+    				if (launchPadEvent.control.latchedState)
+    					gearPickup.StartAutoPickup();
+        			else
+        				gearPickup.StopAutoPickup();
+
     				break;
     				
 				case BUTTON_BLUE:
@@ -214,8 +236,24 @@ class Teleop
 
     				break;
     				
-				//case BUTTON_RED_RIGHT:
-					//robot.navx.resetYaw();
+				case BUTTON_BLUE_RIGHT:
+    				if (launchPadEvent.control.latchedState)
+    					gearPickup.lowerPickup();
+        			else
+        				gearPickup.raisePickup();
+
+					break;
+    				
+				case BUTTON_RED:
+    				if (launchPadEvent.control.latchedState)
+    					gearPickup.pickupOut();
+        			else
+        				gearPickup.pickupIn();
+
+					break;
+    				
+				case BUTTON_RED_RIGHT:
+					break;
 				
 				default:
 					break;
@@ -244,6 +282,11 @@ class Teleop
     				
     				break;
     				
+	    		case ROCKER_LEFT_FRONT:
+					robot.cameraThread.ChangeCamera();
+					invertDrive = !invertDrive;
+	    			break;
+    				
 				default:
 					break;
 	    	}
@@ -265,6 +308,7 @@ class Teleop
 			{
 				case TOP_LEFT:
    					robot.cameraThread.ChangeCamera();
+					invertDrive = !invertDrive;
     				break;
 				
 				default:
@@ -323,7 +367,28 @@ class Teleop
 			{
 				// Trigger starts shoot sequence.
 				case TRIGGER:
+					if (button.latchedState)
+	    				gearBox.highSpeed();
+	    			else
+	    				gearBox.lowSpeed();
+
     				break;
+    				
+				case TOP_RIGHT:
+					if (button.latchedState)
+	    				ballPickup.start();
+	    			else
+	    				ballPickup.stop();
+
+					break;
+					
+				case TOP_LEFT:
+					if (button.latchedState)
+	    				shooter.start();
+	    			else
+	    				shooter.stop();
+
+					break;
 				
 				default:
 					break;

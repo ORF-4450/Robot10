@@ -10,7 +10,7 @@ import Team4450.Lib.Util;
 public class Shooter
 {
 	private Robot		robot;
-	private Talon		motor = new Talon(2);
+	private Talon		motor = new Talon(1), dispenserMotor = new Talon(2);
 
 	public Shooter(Robot robot)
 	{
@@ -49,6 +49,32 @@ public class Shooter
 	public boolean isRunning()
 	{
 		if (motor.get() != 0)
+			return true;
+		else
+			return false;
+	}
+	
+	public void startDispensing()
+	{
+		Util.consoleLog();
+
+		SmartDashboard.putBoolean("DispenserMotor", true);
+		
+		dispenserMotor.set(.50);
+	}
+
+	public void stopDispensing()
+	{
+		Util.consoleLog();
+
+		SmartDashboard.putBoolean("DispenserMotor", false);
+
+		dispenserMotor.set(0);
+	}
+
+	public boolean isDispensing()
+	{
+		if (dispenserMotor.get() != 0)
 			return true;
 		else
 			return false;

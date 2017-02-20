@@ -9,15 +9,15 @@ Port	Device			Description
 4		CanTalon		Right rear drive motor.
 5		CanTalon		Left slave drive motor (slaved to port 1).
 6		CanTalon		Right slave drive motor (slaved to port 3).
+7		CAnTalon		Gear pickup motor.
 
 
 PWM Ports
 Port	Device			Description
 -----------------------------------------------------------------------------------
 0		Talon			Ball pickup motor.
-1		Talon			Gear pickup motor.
-2		Talon			Shooter motor.
-3		Talon			Shooter motor.
+1		Talon			Shooter motor.
+2		Talon			Shooter dispenser motor.
 
 
 PCM 0 Ports
@@ -45,6 +45,8 @@ Port	Device blk-pos	Description
 Digital I/O Ports
 Port	Device			Description
 -----------------------------------------------------------------------------------
+1		Encoder			Gearbox encoder. Orange = 5v, blue = signal.
+2		Encoder			Gearbox encoder. black = ground, yellow = signal.
 
 
 Analog I/O Ports
@@ -62,6 +64,7 @@ Trigger					Toggle gearbox speed.
 Right Joystick
 Button Name				Function
 -----------------------------------------------------------------------------------
+Top_Left				Toggle camera view.
 
 
 Utility Joystick
@@ -74,13 +77,13 @@ Top_Right				Toggles intake motors.
 LaunchPad
 Button Name				Function
 -----------------------------------------------------------------------------------
-Rocker_Left_Back			Toggle CanTalon brake mode.
-Rocker_Left_Front			Toggle camera view.
+Rocker_Left_Back		Toggle CanTalon brake mode.
+Rocker_Left_Front		Toggle camera view.
 Button_Blue				Toggle PTO mode.
 Button_Red				Toggles "gear wrist" piston.
-Button_Blue_Right			Set position of gear elevator to "Low" (To grab gear off of floor)
-Button_Yellow				Set position of gear elevator to "Middle" (To put gear on peg)
-Button_Red_Right			Set position of gear elevator to "Hight" (To bring elevator out of way of fuel intake)
+Button_Blue_Right		Set position of gear elevator to "Low" (To grab gear off of floor)
+Button_Yellow			Set position of gear elevator to "Middle" (To put gear on peg)
+Button_Red_Right		Set position of gear elevator to "High" (To bring elevator out of way of fuel intake)
 
 
 Dashboard Indicators/Controls
@@ -96,4 +99,5 @@ GearPickupDown			boolean			True when gear pickup is in the down pos.
 LowSpeed				boolean			True when low speed is selected.
 HighSpeed				boolean			True when high speed is selected.
 Neutral					boolean			True when gearbox is in neutral
+DispenserMotor			boolean			True when ball dispenser motor is running.
 		  
