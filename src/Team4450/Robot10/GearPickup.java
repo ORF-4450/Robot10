@@ -16,7 +16,7 @@ public class GearPickup
 	private Robot		robot;
 	private Teleop		teleop;
 	private CANTalon	motor = new CANTalon(7);
-	private boolean		pickupDown, pickupOut;
+	private boolean		pickupDown = true, pickupOut = true;
 	private ValveDA		pickupLiftValve = new ValveDA(6);
 	private ValveDA		pickupDeployValve = new ValveDA(1, 0);
 	private Thread		autoPickupThread;
@@ -59,7 +59,7 @@ public class GearPickup
 
 		SmartDashboard.putBoolean("GearPickupMotor", true);
 		
-		motor.set(-.20);
+		motor.set(-.50);
 	}
 
 	public void stopMotor()
@@ -188,9 +188,12 @@ public class GearPickup
 	    	{
 	    		lowerPickup();
 	    		sleep(250);
+	    		pickupOut();
+	    		sleep(250);
 	    		startMotorIn();
+	    		sleep(250);
 	    		
-    	    	while (!isInterrupted() && motor.getOutputCurrent() < 1.0)
+    	    	while (!isInterrupted() && motor.getOutputCurrent() < 5.0)
     	    	{
     	            // We sleep since JS updates come from DS every 20ms or so. We wait 50ms so this thread
     	            // does not run at the same time as the teleop thread.
@@ -202,6 +205,7 @@ public class GearPickup
 	    	catch (Throwable e) {e.printStackTrace(Util.logPrintStream);}
 
 	    	stopMotor();
+	    	pickupIn();
 			raisePickup();
 			
 			autoPickupThread = null;

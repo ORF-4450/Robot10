@@ -39,8 +39,8 @@ public class GearBox
 	{
 		Util.consoleLog("low=%b, neutral=%b, pto=%b", lowSpeed, neutral, pto);
 		
-		SmartDashboard.putBoolean("LowSpeed", lowSpeed);
-		SmartDashboard.putBoolean("HighSpeed", highSpeed);
+		SmartDashboard.putBoolean("Low", lowSpeed);
+		SmartDashboard.putBoolean("High", highSpeed);
 		SmartDashboard.putBoolean("Neutral", neutral);
 		SmartDashboard.putBoolean("PTO", pto);
 	}
@@ -94,9 +94,6 @@ public class GearBox
 
 		if (neutralSupported)
 		{
-			lowSpeed = false;
-			highSpeed = false;
-			
 			neutralValve.Close();
 			
 			if (lowSpeed) highLowValve.SetB();
@@ -104,6 +101,8 @@ public class GearBox
 			highLowValve.SetA();
 			
 			neutral = true;
+			lowSpeed = false;
+			highSpeed = false;
 		}
 		
 		displayStatus();

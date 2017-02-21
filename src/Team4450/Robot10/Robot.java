@@ -30,7 +30,7 @@ import com.ctre.CANTalon.*;
 
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC10-02.19.17-01";
+  static final String  	PROGRAM_NAME = "RAC10-02.21.17-01";
 
   // Motor CAN ID/PWM port assignments (1=left-front, 2=left-rear, 3=right-front, 4=right-rear)
   CANTalon				LFCanTalon, LRCanTalon, RFCanTalon, RRCanTalon, LSlaveCanTalon, RSlaveCanTalon;
@@ -199,8 +199,8 @@ public class Robot extends SampleRobot
 		  SmartDashboard.putBoolean("ShooterMotor", false);
 		  SmartDashboard.putBoolean("GearPickupMotor", false);
 		  SmartDashboard.putBoolean("GearPickupDown", false);
-		  SmartDashboard.putBoolean("LowSpeed", false);
-		  SmartDashboard.putBoolean("HighSpeed", false);
+		  SmartDashboard.putBoolean("Low", false);
+		  SmartDashboard.putBoolean("High", false);
 		  SmartDashboard.putBoolean("Neutral", false);
 		  
 		  Util.consoleLog("end");

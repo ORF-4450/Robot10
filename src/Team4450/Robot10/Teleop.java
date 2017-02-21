@@ -105,6 +105,8 @@ class Teleop
 		utilityStick = new JoyStick(robot.utilityStick, "UtilityStick", JoyStickButtonIDs.TRIGGER, this);
 		utilityStick.AddButton(JoyStickButtonIDs.TOP_LEFT);
 		utilityStick.AddButton(JoyStickButtonIDs.TOP_RIGHT);
+		utilityStick.AddButton(JoyStickButtonIDs.TOP_MIDDLE);
+		utilityStick.AddButton(JoyStickButtonIDs.TOP_BACK);
         utilityStick.addJoyStickEventListener(new UtilityStickListener());
         utilityStick.Start();
         
@@ -368,9 +370,9 @@ class Teleop
 				// Trigger starts shoot sequence.
 				case TRIGGER:
 					if (button.latchedState)
-	    				gearBox.highSpeed();
+	    				shooter.startFeeding();
 	    			else
-	    				gearBox.lowSpeed();
+	    				shooter.stopFeeding();
 
     				break;
     				
@@ -390,6 +392,22 @@ class Teleop
 
 					break;
 				
+				case TOP_MIDDLE:
+					if (button.latchedState)
+	    				gearPickup.startMotorIn();
+	    			else
+	    				gearPickup.stopMotor();
+
+					break;
+					
+				case TOP_BACK:
+					if (button.latchedState)
+	    				gearPickup.startMotorOut();
+	    			else
+	    				gearPickup.stopMotor();
+
+					break;
+					
 				default:
 					break;
 			}

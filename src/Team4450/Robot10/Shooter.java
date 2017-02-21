@@ -10,7 +10,7 @@ import Team4450.Lib.Util;
 public class Shooter
 {
 	private Robot		robot;
-	private Talon		motor = new Talon(1), dispenserMotor = new Talon(2);
+	private Talon		motor = new Talon(1), feederMotor = new Talon(2), indexerMotor = new Talon(3);
 
 	public Shooter(Robot robot)
 	{
@@ -26,6 +26,8 @@ public class Shooter
 		Util.consoleLog();
 		
 		if (motor != null) motor.free();
+		if (feederMotor != null) feederMotor.free();
+		if (indexerMotor != null) indexerMotor.free();
 	}
 	
 	public void start()
@@ -34,7 +36,7 @@ public class Shooter
 
 		SmartDashboard.putBoolean("ShooterMotor", true);
 		
-		motor.set(.50);
+		motor.set(.80);
 	}
 
 	public void stop()
@@ -54,27 +56,29 @@ public class Shooter
 			return false;
 	}
 	
-	public void startDispensing()
+	public void startFeeding()
 	{
 		Util.consoleLog();
 
 		SmartDashboard.putBoolean("DispenserMotor", true);
 		
-		dispenserMotor.set(.50);
+		feederMotor.set(.50);
+		indexerMotor.set(-.50);
 	}
 
-	public void stopDispensing()
+	public void stopFeeding()
 	{
 		Util.consoleLog();
 
 		SmartDashboard.putBoolean("DispenserMotor", false);
 
-		dispenserMotor.set(0);
+		feederMotor.set(0);
+		indexerMotor.set(0);
 	}
 
-	public boolean isDispensing()
+	public boolean isFeeding()
 	{
-		if (dispenserMotor.get() != 0)
+		if (feederMotor.get() != 0)
 			return true;
 		else
 			return false;

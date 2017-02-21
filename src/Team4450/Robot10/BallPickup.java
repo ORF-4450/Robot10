@@ -3,6 +3,7 @@
  */
 package Team4450.Robot10;
 
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import Team4450.Lib.*;
@@ -10,7 +11,7 @@ import Team4450.Lib.*;
 public class BallPickup
 {
 	private Robot		robot;
-	private Talon		motor = new Talon(0);
+	private Spark		motor = new Spark(0);
 	
 	public BallPickup(Robot robot)
 	{
@@ -34,7 +35,7 @@ public class BallPickup
 		
 		SmartDashboard.putBoolean("BallPickupMotor", true);
 
-		motor.set(.50);
+		motor.set(-.50);
 	}
 
 	public void stop()
