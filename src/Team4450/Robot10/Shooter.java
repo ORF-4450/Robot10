@@ -3,7 +3,9 @@
  */
 package Team4450.Robot10;
 
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import Team4450.Lib.Util;
 
@@ -12,11 +14,16 @@ public class Shooter
 	private Robot		robot;
 	private Talon		motor = new Talon(1), feederMotor = new Talon(2), indexerMotor = new Talon(3);
 
+	// Wheel encoder is plugged into dio port 3 - orange=+5v blue=signal, dio port 4 - black=gnd yellow=signal. 
+	public Encoder		encoder = new Encoder(3, 4, true, EncodingType.k4X);
+
 	public Shooter(Robot robot)
 	{
 		Util.consoleLog();
 		
 		this.robot = robot;
+		
+		encoder.reset();
 		
 		stop();
 	}
@@ -26,6 +33,7 @@ public class Shooter
 		Util.consoleLog();
 		
 		if (motor != null) motor.free();
+		if (encoder != null) encoder.free();
 		if (feederMotor != null) feederMotor.free();
 		if (indexerMotor != null) indexerMotor.free();
 	}
@@ -62,8 +70,17 @@ public class Shooter
 
 		SmartDashboard.putBoolean("DispenserMotor", true);
 		
-		feederMotor.set(.50);
+		feederMotor.set(.30);
 		indexerMotor.set(-.50);
+	}
+	
+	public void startFeedingREverse()
+	{
+		Util.consoleLog();
+
+		SmartDashboard.putBoolean("DispenserMotor", true);
+		
+		feederMotor.set(-.20);
 	}
 
 	public void stopFeeding()

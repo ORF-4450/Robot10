@@ -80,7 +80,7 @@ Button Name				Function
 Rocker_Left_Back		Toggle CanTalon brake mode.
 Rocker_Left_Front		Toggle camera view.
 Button_Blue				Toggle PTO mode.
-Button_Red				Toggles "gear wrist" piston.
+Button_Red				Toggle "gear wrist" piston.
 Button_Blue_Right		Toggle position of gear elevator to "Low" (To grab gear off of floor).
 Button_Yellow			Toggle auto gear pickup.
 Button_Red_Right		Toggle gear motor out (put gear on spring).

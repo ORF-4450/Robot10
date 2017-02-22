@@ -28,7 +28,7 @@ class Teleop
 	private GearPickup			gearPickup;
 	
 	// Wheel encoder is plugged into dio port 1 - orange=+5v blue=signal, dio port 2 black=gnd yellow=signal. 
-	//private Encoder				encoder = new Encoder(1, 2, true, EncodingType.k4X);
+	private Encoder				encoder = new Encoder(1, 2, true, EncodingType.k4X);
 
 	// Encoder ribbon cable to dio ports: ribbon wire 2 = orange, 5 = yellow, 7 = blue, 10 = black
 
@@ -63,7 +63,7 @@ class Teleop
 		if (ballPickup != null) ballPickup.dispose();
 		if (shooter != null) shooter.dispose();
 		if (gearPickup != null) gearPickup.dispose();
-		//if (encoder != null) encoder.free();
+		if (encoder != null) encoder.free();
 	}
 
 	void OperatorControl()
@@ -120,8 +120,11 @@ class Teleop
         
         // Set gyro to heading 0.
         robot.gyro.reset();
+        
+        // Reset encoder.
+        encoder.reset();
 
-        //robot.navx.resetYaw();
+        robot.navx.resetYaw();
         //robot.navx.dumpValuesToNetworkTables();
         
         // Motor safety turned on.
@@ -140,11 +143,11 @@ class Teleop
 
 				rightY = 0;
 			} 
-			else if (invertDrive)
-			{
-				rightY = stickLogCorrection(rightStick.GetY() * -1);	// fwd/back right
-    			leftY = stickLogCorrection(leftStick.GetY() * -1);		// fwd/back left
-			}
+//			else if (invertDrive)
+//			{
+//				rightY = stickLogCorrection(rightStick.GetY() * -1);	// fwd/back right
+//    			leftY = stickLogCorrection(leftStick.GetY() * -1);		// fwd/back left
+//			}
 			else
 			{
 				rightY = stickLogCorrection(rightStick.GetY());	// fwd/back right
@@ -154,8 +157,9 @@ class Teleop
 			utilX = utilityStick.GetX();
 			
 			LCD.printLine(4, "leftY=%.4f  rightY=%.4f utilX=%.4f", leftY, rightY, utilX);
+			LCD.printLine(5, "encoder=%d,  shootenc=%d", encoder.get(), shooter.encoder.get());
 			//LCD.printLine(5, "gyroAngle=%d, gyroRate=%d", (int) robot.gyro.getAngle(), (int) robot.gyro.getRate());
-			//LCD.printLine(6, "yaw=%.0f, total=%.0f, rate=%.3f", robot.navx.getYaw(), robot.navx.getTotalYaw(), robot.navx.getYawRate());
+			LCD.printLine(6, "yaw=%.0f, total=%.0f, rate=%.3f", robot.navx.getYaw(), robot.navx.getTotalYaw(), robot.navx.getYawRate());
 			
 			// Set wheel motors.
 			// Do not feed JS input to robotDrive if we are controlling the motors in automatic functions.
@@ -310,7 +314,7 @@ class Teleop
 			{
 				case TOP_LEFT:
    					robot.cameraThread.ChangeCamera();
-					invertDrive = !invertDrive;
+					//invertDrive = !invertDrive;
     				break;
 				
 				default:
@@ -378,10 +382,16 @@ class Teleop
     				
 				case TOP_RIGHT:
 					if (button.latchedState)
+					{
 	    				ballPickup.start();
+	    				if (!shooter.isRunning()) shooter.startFeedingREverse();
+					}
 	    			else
+	    			{
 	    				ballPickup.stop();
-
+	    				if (!shooter.isRunning()) shooter.stopFeeding();
+	    			}
+					
 					break;
 					
 				case TOP_LEFT:

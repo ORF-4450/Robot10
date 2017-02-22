@@ -159,8 +159,8 @@ public class Robot extends SampleRobot
 
    		// Start camera server using our class for usb cameras.
       
-   		//cameraThread = CameraFeed.getInstance(); 
-   		//cameraThread.start();
+   		cameraThread = CameraFeed.getInstance(); 
+   		cameraThread.start();
    		
    		// Start thread to monitor distance sensor.
    		
@@ -169,7 +169,7 @@ public class Robot extends SampleRobot
    		
    		// Create NavX object here so it has time to calibrate before we
    		// use it. Takes 10 seconds.
-   		//navx = NavX.getInstance();
+   		navx = NavX.getInstance();
    		
    		Util.consoleLog("end");
     }
