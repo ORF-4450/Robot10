@@ -7,6 +7,7 @@ import com.ctre.CANTalon;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import Team4450.Lib.LCD;
+import Team4450.Lib.LaunchPad.LaunchPadControlIDs;
 import Team4450.Lib.Util;
 import Team4450.Lib.ValveDA;
 import Team4450.Lib.JoyStick.JoyStickButtonIDs;
@@ -66,7 +67,14 @@ public class GearPickup
 	{
 		Util.consoleLog();
 
-		//if (teleop != null) teleop.utilityStick.FindButton(JoyStickButtonIDs.TOP_LEFT).latchedState = false;
+		// Note to students. This if block is important. This makes the toggle in teleop
+		// work correctly if stopMotor is called from the auto pickup thread. If you don't
+		// understand what is going on here, ASK!
+		
+		if (teleop != null)
+		{
+			if (teleop.launchPad !=  null ) teleop.launchPad.FindButton(LaunchPadControlIDs.BUTTON_YELLOW).latchedState = false;
+		}
 
 		SmartDashboard.putBoolean("GearPickupMotor", false);
 		

@@ -118,15 +118,13 @@ class Teleop
         // of the rocker switch.
         if (robot.isComp) robot.SetCANTalonBrakeMode(lpControl.latchedState);
         
-        // Set gyro to heading 0.
-        robot.gyro.reset();
+        // Set gyro/Navx to heading 0.
+        //robot.gyro.reset();
+        robot.navx.resetYaw();
         
         // Reset encoder.
         encoder.reset();
 
-        robot.navx.resetYaw();
-        //robot.navx.dumpValuesToNetworkTables();
-        
         // Motor safety turned on.
         robot.robotDrive.setSafetyEnabled(true);
         
@@ -143,6 +141,7 @@ class Teleop
 
 				rightY = 0;
 			} 
+// Not inverting controls at this time. Do not do this!			
 //			else if (invertDrive)
 //			{
 //				rightY = stickLogCorrection(rightStick.GetY() * -1);	// fwd/back right

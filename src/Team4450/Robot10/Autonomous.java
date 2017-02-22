@@ -39,9 +39,10 @@ public class Autonomous
 		// Initialize encoder.
 		encoder.reset();
         
-        // Set gyro to heading 0.
-        robot.gyro.reset();
-
+        // Set gyro/NavX to heading 0.
+        //robot.gyro.reset();
+		robot.navx.resetYaw();
+		
         // Wait to start motors so gyro will be zero before first movement.
         Timer.delay(.50);
 
@@ -49,13 +50,18 @@ public class Autonomous
 		{
 			case 0:		// No auto program.
 				break;
+				
+			case 1:		// Drive forward to line and stop.
+				autoDrive(-.50, 9000, true);
+				
+				break;
 		}
 		
 		Util.consoleLog("end");
 	}
 
 	// Auto drive in set direction and power for specified encoder count. Stops
-	// with our without brakes on CAN bus drive system. Uses gyro to go straight.
+	// with or without brakes on CAN bus drive system. Uses gyro/NavX to go straight.
 	
 	private void autoDrive(double power, int encoderCounts, boolean enableBrakes)
 	{
@@ -69,11 +75,13 @@ public class Autonomous
 		while (robot.isAutonomous() && Math.abs(encoder.get()) < encoderCounts) 
 		{
 			LCD.printLine(3, "encoder=%d", encoder.get());
-			LCD.printLine(5, "gyroAngle=%d, gyroRate=%d", (int) robot.gyro.getAngle(), (int) robot.gyro.getRate());
+			//LCD.printLine(5, "gyroAngle=%d, gyroRate=%d", (int) robot.gyro.getAngle(), (int) robot.gyro.getRate());
+			LCD.printLine(5, "gyroAngle=%d", (int) robot.navx.getYaw());
 			
 			// Angle is negative if robot veering left, positive if veering right.
 			
-			angle = (int) robot.gyro.getAngle();
+			//angle = (int) robot.gyro.getAngle();
+			angle = (int) robot.navx.getYaw();
 			
 			//Util.consoleLog("angle=%d", angle);
 			

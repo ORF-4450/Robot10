@@ -43,8 +43,8 @@ public class Robot extends SampleRobot
   final Joystick		launchPad = new Joystick(3);
   
   final Compressor		compressor = new Compressor(0);	// Compressor class represents the PCM. There are 2.
-  //final Compressor		compressor1 = new Compressor(1);
-  final AnalogGyro		gyro = new AnalogGyro(0);		// gyro must be plugged into analog port 0 or 1.
+  final Compressor		compressor1 = new Compressor(1);
+  //final AnalogGyro		gyro = new AnalogGyro(0);		// gyro must be plugged into analog port 0 or 1.
   
   public Properties		robotProperties;
   
@@ -124,7 +124,7 @@ public class Robot extends SampleRobot
       
    		PDP.clearStickyFaults();
    		compressor.clearAllPCMStickyFaults();
-   		//compressor1.clearAllPCMStickyFaults();
+   		compressor1.clearAllPCMStickyFaults();
 
    		// Configure motor controllers and RobotDrive.
    		
@@ -202,6 +202,7 @@ public class Robot extends SampleRobot
 		  SmartDashboard.putBoolean("Low", false);
 		  SmartDashboard.putBoolean("High", false);
 		  SmartDashboard.putBoolean("Neutral", false);
+		  SmartDashboard.putBoolean("Feeder", false);
 		  
 		  Util.consoleLog("end");
 	  }
@@ -234,7 +235,7 @@ public class Robot extends SampleRobot
     	  // Reset persistent fault flags in control system modules.
     	  PDP.clearStickyFaults();
     	  compressor.clearAllPCMStickyFaults();
-    	  //compressor1.clearAllPCMStickyFaults();
+    	  compressor1.clearAllPCMStickyFaults();
              
     	  // Start autonomous process contained in the Autonomous class.
         
@@ -272,7 +273,7 @@ public class Robot extends SampleRobot
     	  // Reset persistent fault flags in control system modules.
           PDP.clearStickyFaults();
           compressor.clearAllPCMStickyFaults();
-       	  //compressor1.clearAllPCMStickyFaults();
+       	  compressor1.clearAllPCMStickyFaults();
 
           // This code turns off the automatic compressor management if requested by DS.
           compressor.setClosedLoopControl(SmartDashboard.getBoolean("CompressorEnabled", true));
