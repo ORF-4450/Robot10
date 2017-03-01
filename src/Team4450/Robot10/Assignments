@@ -34,12 +34,15 @@ Port	Device blk-pos	Description
 5		VavleDA 2		B side not used. Blocked.	
 6		ValveDA 3		A side Gear pickup up position.
 7		ValveDA 3		B side Gear pickup down position.
+                                                                                                       
 
 PCM 1 Ports
 Port	Device blk-pos	Description
 -----------------------------------------------------------------------------------
 0		ValveDA	4		A side Gear Pickup in position.
 1		VavleDA 4		B side Gear pickup out position.
+3		ValveDA 5		A side not used.
+4		ValveDA	5		B side not used.
 
 
 Digital I/O Ports

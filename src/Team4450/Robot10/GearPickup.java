@@ -28,6 +28,10 @@ public class GearPickup
 		
 		this.robot = robot;
 		this.teleop = teleop;
+
+		robot.InitializeCANTalon((CANTalon) motor);
+
+		motor.enableBrakeMode(true);
 		
 		stopMotor();
 		
@@ -40,7 +44,7 @@ public class GearPickup
 	{
 		Util.consoleLog();
 		
-		//if (motor != null) motor.free();
+		if (motor != null) motor.delete();
 		if (pickupLiftValve != null) pickupLiftValve.dispose();
 		if (pickupDeployValve != null) pickupDeployValve.dispose();
 	}

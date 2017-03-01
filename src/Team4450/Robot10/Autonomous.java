@@ -11,8 +11,9 @@ public class Autonomous
 {
 	private final Robot	robot;
 	private final int	program = (int) SmartDashboard.getNumber("AutoProgramSelect");
+	private GearPickup	gearPickup;
 	
-	// encoder is plugged into dio port 2 - orange=+5v blue=signal, dio port 3 black=gnd yellow=signal. 
+	//	encoder is plugged into dio port 2 - orange=+5v blue=signal, dio port 3 black=gnd yellow=signal. 
 	private Encoder		encoder = new Encoder(1, 2, true, EncodingType.k4X);
 
 	Autonomous(Robot robot)
@@ -20,6 +21,8 @@ public class Autonomous
 		Util.consoleLog();
 		
 		this.robot = robot;
+		
+		gearPickup = new GearPickup(robot, null);
 	}
 
 	public void dispose()
@@ -27,6 +30,7 @@ public class Autonomous
 		Util.consoleLog();
 		
 		encoder.free();
+		gearPickup.dispose();
 	}
 
 	public void execute()
@@ -55,11 +59,67 @@ public class Autonomous
 				autoDrive(-.50, 9000, true);
 				
 				break;
+				
+			case 2:		// Place gear center start.
+				placeGearCenter(0);
+				
+				break;
+				
+			case 3:		// Place gear left start.
+				placeGearFromSide(true);
+				
+				break;
+				
+			case 4:		// Place gear right start.
+				placeGearFromSide(false);
+				
+				break;
 		}
 		
 		Util.consoleLog("end");
 	}
 
+	private void placeGearCenter(int encoderCounts)
+	{
+		Util.consoleLog("%d", encoderCounts);
+		
+		// Drive forward to peg and stop.
+		
+		autoDrive(-.50, encoderCounts, true);
+		
+		// Start gear pickup motor in reverse.
+		
+		gearPickup.startMotorOut();
+		
+		// Drive backward a bit.
+
+		autoDrive(.50, 500, true);
+		
+		gearPickup.stopMotor();
+	}
+	
+	private void placeGearFromSide(boolean leftSide)
+	{
+		Util.consoleLog("left side=%b", leftSide);
+		
+		// Drive forward to be even with side peg and stop.
+		
+		autoDrive(-.50, 0, true);
+		
+		// rotate as right or left 90 degrees.
+		
+		if (leftSide)
+			// Rotate right.
+			autoRotate(-.50, 90);
+		else
+			// Rotate left
+			autoRotate(.50, 90);
+		
+		// Place gear.
+		
+		placeGearCenter(0);
+	}
+	
 	// Auto drive in set direction and power for specified encoder count. Stops
 	// with or without brakes on CAN bus drive system. Uses gyro/NavX to go straight.
 	
@@ -91,5 +151,23 @@ public class Autonomous
 		}
 
 		robot.robotDrive.tankDrive(0, 0, true);				
+	}
+	
+	// Auto rotate left or right the specified angle.
+	// Turn right, power is -
+	// Turn left, power is +
+	// angle of rotation is always +.
+	
+	private void autoRotate(double power, int angle)
+	{
+		Util.consoleLog("pwr=%.3f  angle=%d", power, angle);
+		
+		robot.navx.resetYaw();
+		
+		robot.robotDrive.tankDrive(power, -power);
+
+		while (robot.isAutonomous() && Math.abs((int) robot.navx.getYaw()) < angle) {Timer.delay(.020);} 
+		
+		robot.robotDrive.tankDrive(0, 0);
 	}
 }
