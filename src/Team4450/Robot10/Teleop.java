@@ -158,8 +158,11 @@ class Teleop
 			LCD.printLine(4, "leftY=%.4f  rightY=%.4f utilX=%.4f", leftY, rightY, utilX);
 			LCD.printLine(5, "encoder=%d,  shootenc=%d", encoder.get(), shooter.encoder.get());
 			//LCD.printLine(5, "gyroAngle=%d, gyroRate=%d", (int) robot.gyro.getAngle(), (int) robot.gyro.getRate());
-			LCD.printLine(6, "yaw=%.0f, total=%.0f, rate=%.3f", robot.navx.getYaw(), robot.navx.getTotalYaw(), robot.navx.getYawRate());
-			
+			LCD.printLine(6, "yaw=%.0f, total=%.0f, rate=%.3f", robot.navx.getYaw(), robot.navx.getTotalYaw(), 
+					robot.navx.getYawRate());
+			LCD.printLine(7, "shootenc=%d rpm=%.0f pwr=%.2f", shooter.shooterSpeedSource.get(), 
+					shooter.shooterSpeedSource.getRate() * 60, shooter.motor.get());
+
 			// Set wheel motors.
 			// Do not feed JS input to robotDrive if we are controlling the motors in automatic functions.
 
@@ -289,7 +292,7 @@ class Teleop
     				
 	    		case ROCKER_LEFT_FRONT:
 					robot.cameraThread.ChangeCamera();
-					invertDrive = !invertDrive;
+					//invertDrive = !invertDrive;
 	    			break;
     				
 				default:
@@ -383,7 +386,7 @@ class Teleop
 					if (button.latchedState)
 					{
 	    				ballPickup.start();
-	    				if (!shooter.isRunning()) shooter.startFeedingREverse();
+	    				if (!shooter.isRunning()) shooter.startFeedingReverse();
 					}
 	    			else
 	    			{
@@ -395,7 +398,7 @@ class Teleop
 					
 				case TOP_LEFT:
 					if (button.latchedState)
-	    				shooter.start();
+	    				shooter.start(shooter.SHOOTER_HIGH_POWER);
 	    			else
 	    				shooter.stop();
 

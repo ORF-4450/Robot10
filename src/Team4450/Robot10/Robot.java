@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import Team4450.Lib.*;
-import edu.wpi.first.wpilibj.AnalogGyro;
+//import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 //import edu.wpi.first.wpilibj.Talon;
+
+
 
 import com.ctre.*;
 import com.ctre.CANTalon.*;
@@ -30,7 +32,7 @@ import com.ctre.CANTalon.*;
 
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC10-02.21.17-01";
+  static final String  	PROGRAM_NAME = "RAC10-03.01.17-02";
 
   // Motor CAN ID/PWM port assignments (1=left-front, 2=left-rear, 3=right-front, 4=right-rear)
   CANTalon				LFCanTalon, LRCanTalon, RFCanTalon, RRCanTalon, LSlaveCanTalon, RSlaveCanTalon;
@@ -44,6 +46,8 @@ public class Robot extends SampleRobot
   
   final Compressor		compressor = new Compressor(0);	// Compressor class represents the PCM. There are 2.
   final Compressor		compressor1 = new Compressor(1);
+  private ValveDA		unusedValve = new ValveDA(1, 3);
+
   //final AnalogGyro		gyro = new AnalogGyro(0);		// gyro must be plugged into analog port 0 or 1.
   
   public Properties		robotProperties;
@@ -113,18 +117,36 @@ public class Robot extends SampleRobot
 
    		// Initialize PID data entry fields on the DS to thier default values.
    		
+//   		SmartDashboard.putBoolean("PIDEnabled", false);
+//   		SmartDashboard.putNumber("PValue", 0);
+//   		SmartDashboard.putNumber("IValue", 0);
+//   		SmartDashboard.putNumber("DValue", 0);
+//   		SmartDashboard.putNumber("LowSetting", 0);
+//   		SmartDashboard.putNumber("HighSetting", 0);
+
+   		// Initialize PID data entry fields on the DS to thier default values.
+   		// We create an instance of Shooter class to get the default PID values set
+   		// according to which robot is running this code.
+   		
+   		Shooter shooter = new Shooter(this);
+   		
    		SmartDashboard.putBoolean("PIDEnabled", false);
-   		SmartDashboard.putNumber("PValue", 0);
-   		SmartDashboard.putNumber("IValue", 0);
-   		SmartDashboard.putNumber("DValue", 0);
-   		SmartDashboard.putNumber("LowSetting", 0);
-   		SmartDashboard.putNumber("HighSetting", 0);
+   		SmartDashboard.putNumber("PValue", shooter.PVALUE);
+   		SmartDashboard.putNumber("IValue", shooter.IVALUE);
+   		SmartDashboard.putNumber("DValue", shooter.DVALUE);
+   		SmartDashboard.putNumber("LowSetting", shooter.SHOOTER_LOW_RPM);
+   		SmartDashboard.putNumber("HighSetting", shooter.SHOOTER_HIGH_RPM);
+   		
+   		shooter.dispose();
    		
    		// Reset PDB & PCM sticky faults.
       
    		PDP.clearStickyFaults();
    		compressor.clearAllPCMStickyFaults();
    		compressor1.clearAllPCMStickyFaults();
+   		
+   		// Seat unused valve.
+   		unusedValve.SetA();
 
    		// Configure motor controllers and RobotDrive.
    		
@@ -159,8 +181,11 @@ public class Robot extends SampleRobot
 
    		// Start camera server using our class for usb cameras.
       
-   		cameraThread = CameraFeed.getInstance(); 
-   		cameraThread.start();
+   		if (isComp)
+   		{
+       		cameraThread = CameraFeed.getInstance(); 
+       		cameraThread.start();
+   		}
    		
    		// Start thread to monitor distance sensor.
    		

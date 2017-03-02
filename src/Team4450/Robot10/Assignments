@@ -17,7 +17,8 @@ Port	Device			Description
 -----------------------------------------------------------------------------------
 0		Talon			Ball pickup motor.
 1		Talon			Shooter motor.
-2		Talon			Shooter dispenser motor.
+2		Talon			Shooter feeder motor.
+3		Talon			Shooter indexer motor.
 
 
 PCM 0 Ports
@@ -78,6 +79,9 @@ Button Name				Function
 Trigger					Toggle despensing fuel to shooter.
 Top_Left				Toggles spining up fuel shooter wheel.
 Top_Right				Toggles intake motors.
+Top_Middle				Toggles gear motor in.
+Top_Back                Toggles gear motor out (put gear on spring).
+
 
 LaunchPad
 Button Name				Function

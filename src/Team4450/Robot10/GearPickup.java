@@ -10,7 +10,6 @@ import Team4450.Lib.LCD;
 import Team4450.Lib.LaunchPad.LaunchPadControlIDs;
 import Team4450.Lib.Util;
 import Team4450.Lib.ValveDA;
-import Team4450.Lib.JoyStick.JoyStickButtonIDs;
 
 public class GearPickup
 {
@@ -64,7 +63,7 @@ public class GearPickup
 
 		SmartDashboard.putBoolean("GearPickupMotor", true);
 		
-		motor.set(-.50);
+		motor.set(-.40);
 	}
 
 	public void stopMotor()
@@ -205,13 +204,15 @@ public class GearPickup
 	    		startMotorIn();
 	    		sleep(250);
 	    		
-    	    	while (!isInterrupted() && motor.getOutputCurrent() < 5.0)
+    	    	while (!isInterrupted() && motor.getOutputCurrent() < 10.0) // 5.0
     	    	{
     	            // We sleep since JS updates come from DS every 20ms or so. We wait 50ms so this thread
     	            // does not run at the same time as the teleop thread.
-    	    		LCD.printLine(7, "gearmotor current=%f", motor.getOutputCurrent());
+    	    		LCD.printLine(8, "gearmotor current=%f", motor.getOutputCurrent());
     	            sleep(50);
     	    	}
+    	    	
+    	    	sleep(500);	// let motor run one sec after gear pickup detected.
 	    	}
 	    	catch (InterruptedException e) {}
 	    	catch (Throwable e) {e.printStackTrace(Util.logPrintStream);}
