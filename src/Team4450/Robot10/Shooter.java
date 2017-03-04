@@ -59,7 +59,7 @@ public class Shooter
 		{
 			// Competition robot PID defaults.
 			SHOOTER_LOW_POWER = .50;
-			SHOOTER_HIGH_POWER = .70;
+			SHOOTER_HIGH_POWER = .45;
 			SHOOTER_LOW_RPM = 4900;
 			SHOOTER_HIGH_RPM = 9000;
 
@@ -164,7 +164,7 @@ public class Shooter
 
 		SmartDashboard.putBoolean("DispenserMotor", true);
 		
-		feederMotor.set(.50);	// comp=.30
+		feederMotor.set(-.50);	// comp=.30
 		indexerMotor.set(-.80);	// comp=.50
 	}
 	

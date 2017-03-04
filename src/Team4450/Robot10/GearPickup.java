@@ -63,7 +63,7 @@ public class GearPickup
 
 		SmartDashboard.putBoolean("GearPickupMotor", true);
 		
-		motor.set(-.40);
+		motor.set(-.50);
 	}
 
 	public void stopMotor()

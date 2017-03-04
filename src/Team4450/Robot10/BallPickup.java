@@ -35,7 +35,7 @@ public class BallPickup
 		
 		SmartDashboard.putBoolean("BallPickupMotor", true);
 
-		motor.set(-.50);
+		motor.set(.80);
 	}
 
 	public void stop()

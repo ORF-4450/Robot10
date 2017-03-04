@@ -12,7 +12,7 @@ public class Autonomous
 	private final Robot	robot;
 	private final int	program = (int) SmartDashboard.getNumber("AutoProgramSelect");
 	private GearPickup	gearPickup;
-	
+	private GearBox		gearBox;
 	//	encoder is plugged into dio port 2 - orange=+5v blue=signal, dio port 3 black=gnd yellow=signal. 
 	private Encoder		encoder = new Encoder(1, 2, true, EncodingType.k4X);
 
@@ -22,6 +22,8 @@ public class Autonomous
 		
 		this.robot = robot;
 		
+		gearBox = new GearBox(robot);
+
 		gearPickup = new GearPickup(robot, null);
 	}
 
@@ -30,6 +32,7 @@ public class Autonomous
 		Util.consoleLog();
 		
 		encoder.free();
+		gearBox.dispose();
 		gearPickup.dispose();
 	}
 

@@ -99,6 +99,7 @@ class Teleop
         leftStick.Start();
         
 		rightStick = new JoyStick(robot.rightStick, "RightStick", JoyStickButtonIDs.TOP_LEFT, this);
+		rightStick.AddButton(JoyStickButtonIDs.TRIGGER);
         rightStick.addJoyStickEventListener(new RightStickListener());
         rightStick.Start();
         
@@ -137,9 +138,11 @@ class Teleop
 
 			if (gearBox.isPTO())
 			{
+				rightY = stickLogCorrection(rightStick.GetY());	// fwd/back right
+				
 				leftY = utilityStick.GetY();
 
-				rightY = 0;
+				//rightY = 0;
 			} 
 // Not inverting controls at this time. Do not do this!			
 //			else if (invertDrive)
@@ -261,6 +264,11 @@ class Teleop
 					break;
     				
 				case BUTTON_RED_RIGHT:
+    				if (launchPadEvent.control.latchedState)
+    					gearPickup.pickupOut();
+        			else
+        				gearPickup.pickupIn();
+
 					break;
 				
 				default:
@@ -314,6 +322,11 @@ class Teleop
 			
 			switch(button.id)
 			{
+				case TRIGGER:
+					robot.cameraThread.ChangeCamera();
+
+					break;
+					
 				case TOP_LEFT:
    					robot.cameraThread.ChangeCamera();
 					//invertDrive = !invertDrive;
