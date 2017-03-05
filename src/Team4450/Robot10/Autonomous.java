@@ -22,6 +22,8 @@ public class Autonomous
 		
 		this.robot = robot;
 		
+		// Create instance of GearBox to initialize it properly for autonomous.
+		
 		gearBox = new GearBox(robot);
 
 		gearPickup = new GearPickup(robot, null);
@@ -31,9 +33,9 @@ public class Autonomous
 	{
 		Util.consoleLog();
 		
-		encoder.free();
-		gearBox.dispose();
-		gearPickup.dispose();
+		if (encoder != null) encoder.free();
+		if (gearBox != null) gearBox.dispose();
+		if (gearPickup != null) gearPickup.dispose();
 	}
 
 	public void execute()
@@ -64,7 +66,7 @@ public class Autonomous
 				break;
 				
 			case 2:		// Place gear center start.
-				placeGearCenter(5300);
+				placeGearCenter(5800);
 				
 				break;
 				
@@ -115,9 +117,9 @@ public class Autonomous
 		// Drive forward to be on a 55 degree angle with side peg and stop.
 		
 		if (leftSide)
-			autoDrive(-.60, 5500, true);
+			autoDrive(-.50, 5600, true);
 		else
-			autoDrive(-.60, 5000, true);
+			autoDrive(-.50, 5600, true);
 		
 		// rotate as right or left 90 degrees.
 		
