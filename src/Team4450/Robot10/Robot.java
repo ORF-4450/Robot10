@@ -32,7 +32,7 @@ import com.ctre.CANTalon.*;
 
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC10-03.03.17-05";
+  static final String  	PROGRAM_NAME = "RAC10-03.09.17-01";
 
   // Motor CAN ID/PWM port assignments (1=left-front, 2=left-rear, 3=right-front, 4=right-rear)
   CANTalon				LFCanTalon, LRCanTalon, RFCanTalon, RRCanTalon, LSlaveCanTalon, RSlaveCanTalon;
@@ -189,8 +189,8 @@ public class Robot extends SampleRobot
    		
    		// Start thread to monitor distance sensor.
    		
-   		//monitorDistanceThread = MonitorDistanceMBX.getInstance(this);
-   		//monitorDistanceThread.start();
+   		monitorDistanceThread = MonitorDistanceMBX.getInstance(this);
+   		monitorDistanceThread.start();
    		
    		// Create NavX object here so it has time to calibrate before we
    		// use it. Takes 10 seconds.

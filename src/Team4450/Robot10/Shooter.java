@@ -3,6 +3,7 @@
  */
 package Team4450.Robot10;
 
+import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSource;
@@ -18,8 +19,11 @@ public class Shooter
 	public Talon		motor = new Talon(1);
 	private Talon		feederMotor = new Talon(2), indexerMotor = new Talon(3);
 
-	// Wheel encoder is plugged into dio port 3 - orange=+5v blue=signal, dio port 4 - black=gnd yellow=signal. 
-	public Encoder		encoder = new Encoder(3, 4, true, EncodingType.k4X);
+	// Shooter Wheel encoder is plugged into dio port 3 - orange=+5v blue=signal, dio port 4 - black=gnd yellow=signal. 
+	//public Encoder		encoder = new Encoder(3, 4, true, EncodingType.k4X);
+	
+	// Touchless Encoder single channel on dio port 0.
+	public Counter		tlEncoder = new Counter(0);
 
 	// Robot PID defaults. These look like static constants but you must instantiate
 	// this class to set up these items for comp or clone robot before accessing them.
@@ -28,7 +32,8 @@ public class Shooter
 	public double					PVALUE, IVALUE, DVALUE; 
 
 	private final PIDController		shooterPidController;
-	public ShooterSpeedSource		shooterSpeedSource = new ShooterSpeedSource(encoder);
+	//public ShooterSpeedSource		shooterSpeedSource = new ShooterSpeedSource(encoder);
+	public ShooterSpeedSource		shooterSpeedSource = new ShooterSpeedSource(tlEncoder);
 
 	public Shooter(Robot robot)
 	{
@@ -36,14 +41,20 @@ public class Shooter
 		
 		this.robot = robot;
 		
-		encoder.reset();
+		//encoder.reset();
+		tlEncoder.reset();
 		
 		// This is distance per pulse and our distance is 1 revolution since we want to measure
 		// rpm. We determined there are 1024 pulses in a rev so 1/1024 = .000976 rev per pulse.
-		encoder.setDistancePerPulse(.000976);
+		//encoder.setDistancePerPulse(.000976);
+		
+		// This is distance per pulse and our distance is 1 revolution since we want to measure
+		// rpm. We know the touchless encoder pulses once per revolution.
+		tlEncoder.setDistancePerPulse(1);
 		
 		// Tells encoder to supply the rate as the input to any PID controller source.
-		encoder.setPIDSourceType(PIDSourceType.kRate);
+		//encoder.setPIDSourceType(PIDSourceType.kRate);
+		tlEncoder.setPIDSourceType(PIDSourceType.kRate);
 
 		// Create PIDController using our custom PIDSource and SpeedController classes.
 		shooterPidController = new PIDController(0.0, 0.0, 0.0, shooterSpeedSource, motor);
@@ -92,7 +103,8 @@ public class Shooter
 		}
 		
 		if (motor != null) motor.free();
-		if (encoder != null) encoder.free();
+		//if (encoder != null) encoder.free();
+		if (tlEncoder != null) tlEncoder.free();
 		if (feederMotor != null) feederMotor.free();
 		if (indexerMotor != null) indexerMotor.free();
 	}
@@ -221,29 +233,39 @@ public class Shooter
 		shooterPidController.enable();
 	}
 
-	// Encapsulate the encoder so we could modify the rate returned to
+	// Encapsulate an encoder or counter so we could modify the rate returned to
 	// the PID controller.
 	public class ShooterSpeedSource implements PIDSource
 	{
-		private Encoder	encoder;
-		private int		inversion = 1;
-		private double	rpmAccumulator, rpmSampleCount;
+		private Encoder		encoder;
+		private Counter		counter;
+		private int			inversion = 1;
+		private double		rpmAccumulator, rpmSampleCount;
 		
 		public ShooterSpeedSource(Encoder encoder)
 		{
 			this.encoder = encoder;
 		}
 		
+		public ShooterSpeedSource(Counter counter)
+		{
+			this.counter = counter;
+		}
+		
 		@Override
 		public void setPIDSourceType(PIDSourceType pidSource)
 		{
-			encoder.setPIDSourceType(pidSource);
+			if (encoder != null) encoder.setPIDSourceType(pidSource);
+			if (counter != null) counter.setPIDSourceType(pidSource);
 		}
 
 		@Override
 		public PIDSourceType getPIDSourceType()
 		{
-			return encoder.getPIDSourceType();
+			if (encoder != null) return encoder.getPIDSourceType();
+			if (counter != null) return counter.getPIDSourceType();
+
+			return null;
 		}
 		
 		public void setInverted(boolean inverted)
@@ -256,7 +278,10 @@ public class Shooter
 
 		public int get()
 		{
-			return encoder.get() * inversion;
+			if (encoder != null ) return encoder.get() * inversion;
+			if (counter != null ) return counter.get() * inversion;
+			
+			return 0;
 		}
 		
 		public double getRate()
@@ -271,7 +296,10 @@ public class Shooter
 //			
 //			return rpmAccumulator / rpmSampleCount;
 
-			return encoder.getRate() * inversion;
+			if (encoder != null) return encoder.getRate() * inversion;
+			if (counter != null) return counter.getRate() * inversion;
+			
+			return 0;
 		}
 		
 		/**
@@ -291,8 +319,8 @@ public class Shooter
 		{
 			rpmAccumulator = rpmSampleCount = 0;
 			
-			encoder.reset();
+			if (encoder != null) encoder.reset();
+			if (counter != null) counter.reset();
 		}
 	}
-
 }

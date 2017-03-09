@@ -159,7 +159,7 @@ class Teleop
 			utilX = utilityStick.GetX();
 			
 			LCD.printLine(4, "leftY=%.4f  rightY=%.4f utilX=%.4f", leftY, rightY, utilX);
-			LCD.printLine(5, "encoder=%d,  shootenc=%d", encoder.get(), shooter.encoder.get());
+			LCD.printLine(5, "encoder=%d,  shootenc=%d", encoder.get(), shooter.tlEncoder.get());
 			//LCD.printLine(5, "gyroAngle=%d, gyroRate=%d", (int) robot.gyro.getAngle(), (int) robot.gyro.getRate());
 			LCD.printLine(6, "yaw=%.0f, total=%.0f, rate=%.3f", robot.navx.getYaw(), robot.navx.getTotalYaw(), 
 					robot.navx.getYawRate());
