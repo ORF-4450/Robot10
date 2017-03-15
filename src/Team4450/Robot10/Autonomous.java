@@ -15,7 +15,7 @@ public class Autonomous
 	private GearBox		gearBox;
 	private Vision		vision;
 	
-	//	encoder is plugged into dio port 2 - orange=+5v blue=signal, dio port 3 black=gnd yellow=signal. 
+	//	encoder is plugged into dio port 1 - orange=+5v blue=signal, dio port 2 black=gnd yellow=signal. 
 	private Encoder		encoder = new Encoder(1, 2, true, EncodingType.k4X);
 
 	Autonomous(Robot robot)
@@ -105,18 +105,22 @@ public class Autonomous
 
 	private void placeGearCenter(int encoderCounts, boolean useVision)
 	{
-		Util.consoleLog("%d", encoderCounts);
+		Util.consoleLog("%d  vision=%b", encoderCounts, useVision);
 		
 		// Drive forward to peg and stop.
 		
 		if (useVision)
-			autoDrive(-.60, encoderCounts, true);
-		else
 			autoDriveVision(-.60, encoderCounts, true);
+		else
+			autoDrive(-.60, encoderCounts, true);
 		
 		// Start gear pickup motor in reverse.
 		
 		gearPickup.startMotorOut();
+		
+		Timer.delay(.500);
+		
+		gearPickup.lowerPickup();
 		
 		Timer.delay(.500);
 		
@@ -129,7 +133,7 @@ public class Autonomous
 	
 	private void placeGearFromSide(boolean leftSide, boolean useVision)
 	{
-		Util.consoleLog("left side=%b", leftSide);
+		Util.consoleLog("left side=%b  vision=%b", leftSide, useVision);
 		
 		// Drive forward to be on a 55 degree angle with side peg and stop.
 		
@@ -169,7 +173,7 @@ public class Autonomous
 		
 		while (robot.isAutonomous() && Math.abs(encoder.get()) < encoderCounts) 
 		{
-			LCD.printLine(3, "encoder=%d", encoder.get());
+			LCD.printLine(4, "encoder=%d", encoder.get());
 			
 			// Angle is negative if robot veering left, positive if veering right when going forward.
 			// It is opposite when going backward. Note that for this robot, - power means forward and
@@ -233,7 +237,7 @@ public class Autonomous
 		
 		while (robot.isAutonomous() && Math.abs(encoder.get()) < encoderCounts) 
 		{
-			LCD.printLine(3, "encoder=%d", encoder.get());
+			LCD.printLine(4, "encoder=%d", encoder.get());
 			
 			// Angle is negative if robot veering left, positive if veering right when going forward.
 			// It is opposite when going backward. Note that for this robot, - power means forward and

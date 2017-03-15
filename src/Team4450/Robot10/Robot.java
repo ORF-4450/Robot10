@@ -32,7 +32,7 @@ import com.ctre.CANTalon.*;
 
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC10-03.09.17-01";
+  static final String  	PROGRAM_NAME = "RAC10-03.15.17-01";
 
   // Motor CAN ID/PWM port assignments (1=left-front, 2=left-rear, 3=right-front, 4=right-rear)
   CANTalon				LFCanTalon, LRCanTalon, RFCanTalon, RRCanTalon, LSlaveCanTalon, RSlaveCanTalon;
@@ -181,13 +181,13 @@ public class Robot extends SampleRobot
 
    		// Start camera server using our class for usb cameras.
       
-   		if (isComp)
-   		{
+   		//if (isComp)
+   		//{
        		cameraThread = CameraFeed.getInstance(); 
        		cameraThread.start();
-   		}
+   		//}
    		
-   		// Start thread to monitor distance sensor.
+   		// Start thread to monitor distance sensor. Uses Analog port 1.
    		
    		monitorDistanceThread = MonitorDistanceMBX.getInstance(this);
    		monitorDistanceThread.start();

@@ -40,8 +40,8 @@ Port	Device blk-pos	Description
 PCM 1 Ports
 Port	Device blk-pos	Description
 -----------------------------------------------------------------------------------
-0		ValveDA	4		A side Gear Pickup elbow in position.
-1		VavleDA 4		B side Gear pickup elbow out position.
+0		ValveDA	4		A side Gear Pickup wrist in position.
+1		VavleDA 4		B side Gear pickup wrist out position.
 3		ValveDA 5		A side not used.
 4		ValveDA	5		B side not used.
 
@@ -59,6 +59,7 @@ Analog I/O Ports
 Port	Device			Description
 -----------------------------------------------------------------------------------
 0		Gyro			Center gyro for straight travel. Not used for now.
+1		MBX				Ultra Sonic Distance sensor. Testing for now.
 
 
 Left Joystick

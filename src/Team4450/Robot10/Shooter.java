@@ -19,7 +19,7 @@ public class Shooter
 	public Talon		motor = new Talon(1);
 	private Talon		feederMotor = new Talon(2), indexerMotor = new Talon(3);
 
-	// Shooter Wheel encoder is plugged into dio port 3 - orange=+5v blue=signal, dio port 4 - black=gnd yellow=signal. 
+	// Shooter Wheel quad encoder is plugged into dio port 3 - orange=+5v blue=signal, dio port 4 - black=gnd yellow=signal. 
 	//public Encoder		encoder = new Encoder(3, 4, true, EncodingType.k4X);
 	
 	// Touchless Encoder single channel on dio port 0.
@@ -71,8 +71,8 @@ public class Shooter
 			// Competition robot PID defaults.
 			SHOOTER_LOW_POWER = .50;
 			SHOOTER_HIGH_POWER = .45;
-			SHOOTER_LOW_RPM = 4900;
-			SHOOTER_HIGH_RPM = 9000;
+			SHOOTER_LOW_RPM = 2500;
+			SHOOTER_HIGH_RPM = 3000;
 
 			PVALUE = .0025;
 			IVALUE = .0025;
@@ -82,13 +82,13 @@ public class Shooter
 		{
 			// Clone robot PID defaults.
 			SHOOTER_LOW_POWER = .50;
-			SHOOTER_HIGH_POWER = .70;
-			SHOOTER_LOW_RPM = 4900;
-			SHOOTER_HIGH_RPM = 9000;
+			SHOOTER_HIGH_POWER = .45;
+			SHOOTER_LOW_RPM = 2500;
+			SHOOTER_HIGH_RPM = 3000;
 
-			PVALUE = .002; 
-			IVALUE = .002;
-			DVALUE = .005; 
+			PVALUE = .0025; 
+			IVALUE = .0025;
+			DVALUE = .003; 
 		}
 	}
 	
@@ -309,10 +309,23 @@ public class Shooter
 		@Override
 		public double pidGet()
 		{
-			if (encoder.getPIDSourceType() == PIDSourceType.kRate)
-				return getRate();
-			else
-				return get();
+			if (encoder != null)
+			{
+    			if (encoder.getPIDSourceType() == PIDSourceType.kRate)
+    				return getRate();
+    			else
+    				return get();
+			}
+			
+			if (counter != null)
+			{
+    			if (counter.getPIDSourceType() == PIDSourceType.kRate)
+    				return getRate();
+    			else
+    				return get();
+			}
+			
+			return 0;
 		}
 		
 		public void reset()
