@@ -17,7 +17,7 @@ public class Shooter
 {
 	private Robot		robot;
 	public Talon		motor = new Talon(1);
-	private Talon		feederMotor = new Talon(2), indexerMotor = new Talon(3);
+	private Talon		feederMotor = new Talon(3), indexerMotor = new Talon(2);
 
 	// Shooter Wheel quad encoder is plugged into dio port 3 - orange=+5v blue=signal, dio port 4 - black=gnd yellow=signal. 
 	//public Encoder		encoder = new Encoder(3, 4, true, EncodingType.k4X);
@@ -72,11 +72,11 @@ public class Shooter
 			SHOOTER_LOW_POWER = .50;
 			SHOOTER_HIGH_POWER = .45;
 			SHOOTER_LOW_RPM = 2500;
-			SHOOTER_HIGH_RPM = 3000;
+			SHOOTER_HIGH_RPM = 3100;
 
 			PVALUE = .0025;
 			IVALUE = .0025;
-			DVALUE = .003; 
+			DVALUE = .005;	//3; 
 		}
 		else
 		{
@@ -176,7 +176,7 @@ public class Shooter
 
 		SmartDashboard.putBoolean("DispenserMotor", true);
 		
-		feederMotor.set(-.50);	// comp=.30
+		feederMotor.set(-.25);	// comp=.30
 		indexerMotor.set(-.80);	// comp=.50
 	}
 	
@@ -186,7 +186,7 @@ public class Shooter
 
 		SmartDashboard.putBoolean("DispenserMotor", true);
 		
-		feederMotor.set(-.20);
+		feederMotor.set(.20);
 	}
 
 	public void stopFeeding()
@@ -218,17 +218,20 @@ public class Shooter
 		double iValue = SmartDashboard.getNumber("IValue", IVALUE);
 		double dValue = SmartDashboard.getNumber("DValue", DVALUE);
 
-		Util.consoleLog("%.0f  p=%.4f  i=%.4f  d=%.4f", rpm, pValue, iValue, dValue);
+		Util.consoleLog("rpm=%.0f  p=%.4f  i=%.4f  d=%.4f", rpm, pValue, iValue, dValue);
 		
 		// p,i,d values are a guess.
 		// f value is the base motor speed, which is where (power) we start.
 		// setpoint is target rpm converted to rev/sec.
 		// The idea is that we apply power to get rpm up to set point and then maintain.
 		//shooterPidController.setPID(0.001, 0.001, 0.0, 0.0); 
+		
 		shooterPidController.setPID(pValue, iValue, dValue, 0.0); 
 		shooterPidController.setSetpoint(rpm / 60);		// setpoint is revolutions per second.
 		shooterPidController.setPercentTolerance(5);	// 5% error.
 		shooterPidController.setToleranceBuffer(4096);	// 4 seconds of averaging.
+		shooterPidController.setContinuous();
+		//shooterPidController.setOutputRange(.20, .90);
 		shooterSpeedSource.reset();
 		shooterPidController.enable();
 	}

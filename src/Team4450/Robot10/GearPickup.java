@@ -57,6 +57,15 @@ public class GearPickup
 		motor.set(.50);
 	}
 	
+	public void startMotorInSlow()
+	{
+		Util.consoleLog();
+
+		SmartDashboard.putBoolean("GearPickupMotor", true);
+
+		motor.set(.50);
+	}
+	
 	public void startMotorOut()
 	{
 		Util.consoleLog();
@@ -212,14 +221,36 @@ public class GearPickup
     	            sleep(50);
     	    	}
     	    	
-    	    	sleep(500);	// let motor run one sec after gear pickup detected.
-	    	}
-	    	catch (InterruptedException e) {}
-	    	catch (Throwable e) {e.printStackTrace(Util.logPrintStream);}
+    	    	if (!interrupted()) Util.consoleLog("  Gear detected");
+    	    	
+    	    	// We run the gear motor during and after picking gear up off the floor
+    	    	// to suck the gear in as far as possible.
+    	    	
+    	    	startMotorInSlow();
 
-	    	stopMotor();
-	    	pickupIn();
-			raisePickup();
+    	    	sleep(500);
+
+    	    	pickupIn();
+    			raisePickup();
+
+    	    	sleep(1000);
+
+    	    	stopMotor();
+	    	}
+	    	catch (InterruptedException e) 
+	    	{
+		    	stopMotor();
+		    	pickupIn();
+				raisePickup();
+	    	}
+	    	catch (Throwable e) 
+	    	{
+	    		e.printStackTrace(Util.logPrintStream);
+
+		    	stopMotor();
+		    	pickupIn();
+				raisePickup();
+	    	}
 			
 			autoPickupThread = null;
 	    }
