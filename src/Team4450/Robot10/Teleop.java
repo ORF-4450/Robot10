@@ -26,6 +26,7 @@ class Teleop
 	private BallPickup			ballPickup;
 	private Shooter				shooter;
 	private GearPickup			gearPickup;
+	private Vision				vision;
 	
 	// Wheel encoder is plugged into dio port 1 - orange=+5v blue=signal, dio port 2 black=gnd yellow=signal. 
 	private Encoder				encoder = new Encoder(1, 2, true, EncodingType.k4X);
@@ -47,6 +48,8 @@ class Teleop
 		shooter = new Shooter(robot);
 		
 		gearPickup = new GearPickup(robot, this);
+				
+		vision = Vision.getInstance(robot);
 	}
 
 	// Free all objects that need it.
@@ -100,6 +103,7 @@ class Teleop
         
 		rightStick = new JoyStick(robot.rightStick, "RightStick", JoyStickButtonIDs.TOP_LEFT, this);
 		rightStick.AddButton(JoyStickButtonIDs.TRIGGER);
+		rightStick.AddButton(JoyStickButtonIDs.TOP_BACK);
         rightStick.addJoyStickEventListener(new RightStickListener());
         rightStick.Start();
         
@@ -111,7 +115,7 @@ class Teleop
         utilityStick.addJoyStickEventListener(new UtilityStickListener());
         utilityStick.Start();
         
-        // Tighten up dead zone for smoother turrent movement.
+        // Tighten up dead zone for smoother climber movement.
         utilityStick.deadZone = .05;
 
 		// Set CAN Talon brake mode by rocker switch setting.
@@ -138,11 +142,9 @@ class Teleop
 
 			if (gearBox.isPTO())
 			{
-				rightY = stickLogCorrection(rightStick.GetY());	// fwd/back right
+				rightY = stickLogCorrection(rightStick.GetY());		// fwd/back right
 				
-				leftY = utilityStick.GetY();
-
-				//rightY = 0;
+				leftY = stickLogCorrection(utilityStick.GetY());	// up/down
 			} 
 // Not inverting controls at this time. Do not do this!			
 //			else if (invertDrive)
@@ -158,6 +160,7 @@ class Teleop
 			
 			utilX = utilityStick.GetX();
 			
+			LCD.printLine(3, "distance=%.2f", robot.monitorDistanceThread.getRangeInches());
 			LCD.printLine(4, "leftY=%.4f  rightY=%.4f  utilX=%.4f", leftY, rightY, utilX);
 			LCD.printLine(5, "encoder=%d,  shootenc=%d", encoder.get(), shooter.tlEncoder.get());
 			//LCD.printLine(5, "gyroAngle=%d, gyroRate=%d", (int) robot.gyro.getAngle(), (int) robot.gyro.getRate());
@@ -299,7 +302,7 @@ class Teleop
     				break;
     				
 	    		case ROCKER_LEFT_FRONT:
-					robot.cameraThread.ChangeCamera();
+					if (robot.cameraThread != null) robot.cameraThread.ChangeCamera();
 					//invertDrive = !invertDrive;
 	    			break;
     				
@@ -316,6 +319,8 @@ class Teleop
 		
 	    public void ButtonDown(JoyStickEvent joyStickEvent) 
 	    {
+	    	int angle;
+	    	
 	    	JoyStickButton	button = joyStickEvent.button;
 	    	
 			Util.consoleLog("%s, latchedState=%b", button.id.name(),  button.latchedState);
@@ -323,7 +328,7 @@ class Teleop
 			switch(button.id)
 			{
 				case TRIGGER:
-					robot.cameraThread.ChangeCamera();
+					if (robot.cameraThread != null) robot.cameraThread.ChangeCamera();
 
 					break;
 					
@@ -331,6 +336,12 @@ class Teleop
    					robot.cameraThread.ChangeCamera();
 					//invertDrive = !invertDrive;
     				break;
+    				
+				case TOP_BACK:
+					vision.SeekPegOffset();
+					angle = vision.getPegOffset();
+					Util.consoleLog("angle=%d", angle);
+					break;
 				
 				default:
 					break;

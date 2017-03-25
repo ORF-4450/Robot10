@@ -32,7 +32,7 @@ import com.ctre.CANTalon.*;
 
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC10-03.16.17-01";
+  static final String  	PROGRAM_NAME = "RAC10-03.24.17-01";
 
   // Motor CAN ID/PWM port assignments (1=left-front, 2=left-rear, 3=right-front, 4=right-rear)
   CANTalon				LFCanTalon, LRCanTalon, RFCanTalon, RRCanTalon, LSlaveCanTalon, RSlaveCanTalon;
@@ -61,7 +61,8 @@ public class Robot extends SampleRobot
   DriverStation.Alliance	alliance;
   int                       location;
     
-  Thread               	monitorBatteryThread, monitorDistanceThread, monitorCompressorThread;
+  Thread               	monitorBatteryThread, monitorCompressorThread, monitorPDPThread;
+  MonitorDistanceMBX	monitorDistanceThread;
   CameraFeed			cameraThread;
   
   NavX					navx;
@@ -170,31 +171,32 @@ public class Robot extends SampleRobot
 //        gyro.initGyro();
 //        gyro.setSensitivity(.007);	// Analog Devices model ADSR-S652.
 //        gyro.calibrate();
+   		
+   		// Create NavX object here so it has time to calibrate before we
+   		// use it. Takes 10 seconds.
+   		
+   		navx = NavX.getInstance();
 
-   		// Start the battery, compressor and camera feed monitoring Tasks.
+   		// Start the battery, compressor, PDP and camera feed monitoring Tasks.
 
    		monitorBatteryThread = MonitorBattery.getInstance(ds);
    		monitorBatteryThread.start();
 
    		monitorCompressorThread = MonitorCompressor.getInstance();
    		monitorCompressorThread.start();
+   		
+   		//monitorPDPThread = MonitorPDP.getInstance(ds, PDP);
+   		//monitorPDPThread.start();
 
    		// Start camera server using our class for usb cameras.
       
-   		//if (isComp)
-   		//{
-       		cameraThread = CameraFeed.getInstance(); 
-       		cameraThread.start();
-   		//}
+       	cameraThread = CameraFeed.getInstance(); 
+       	cameraThread.start();
    		
    		// Start thread to monitor distance sensor. Uses Analog port 1.
    		
    		monitorDistanceThread = MonitorDistanceMBX.getInstance(this);
    		monitorDistanceThread.start();
-   		
-   		// Create NavX object here so it has time to calibrate before we
-   		// use it. Takes 10 seconds.
-   		navx = NavX.getInstance();
    		
    		Util.consoleLog("end");
     }

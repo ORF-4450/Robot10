@@ -221,8 +221,9 @@ public class Autonomous
 		robot.robotDrive.tankDrive(0, 0);
 	}
 	
-	// Auto drive in set direction and power for specified encoder count. Stops
-	// with or without brakes on CAN bus drive system. Uses vision to drive to spring.
+	// Auto drive in current direction and power for specified encoder count. Stops
+	// with or without brakes on CAN bus drive system. Uses vision to drive to spring
+	// targets.
 	
 	private void autoDriveVision(double power, int encoderCounts, boolean enableBrakes)
 	{
@@ -244,9 +245,15 @@ public class Autonomous
 			// + power means backward.
 			
 			if (vision.SeekPegOffset())
+			{
 				angle = vision.getPegOffset();
+				SmartDashboard.putBoolean("TargetLocked", true);
+			}
 			else
+			{
 				angle = 0;
+				SmartDashboard.putBoolean("TargetLocked", false);
+			}
 			
 			LCD.printLine(5, "angle=%d", (int) angle);
 			
@@ -254,16 +261,16 @@ public class Autonomous
 			
 			if (power > 0) angle = -angle;
 			
-			//Util.consoleLog("angle=%d", angle);
+			Util.consoleLog("angle=%d", angle);
 			
 			// Note we invert sign on the angle because we want the robot to turn in the opposite
 			// direction than it is currently going to correct it. So a + angle says robot is veering
 			// right so we set the turn value to - because - is a turn left which corrects our right
-			// drift.
+			// drift. Gain value controls sensitivity to angle.
 			
 			robot.robotDrive.drive(power, -angle * gain);
 			
-			Timer.delay(.020);
+			Timer.delay(.5);
 		}
 
 		robot.robotDrive.tankDrive(0, 0, true);				

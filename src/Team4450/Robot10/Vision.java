@@ -12,12 +12,14 @@ public class Vision
 {
 	private static Vision	vision;
 	private Robot			robot;
-	private int				pegOffset = 0;
+	private int				pegOffset = 0, pegDistance = 0;
 	private PegPipeline		pegPipeline = new PegPipeline();
 	private	int				imageCenter = CameraFeed.imageWidth / 2;
 
 	public Rect				targetRectangle1 = null, targetRectangle2 = null;
 
+	// This is a "singleton" class. One global instance.
+	
 	private Vision(Robot robot)
 	{
 		Util.consoleLog();
@@ -38,7 +40,8 @@ public class Vision
 	 * Seek the offset of the peg from center.
 	 * @return True if offset found, false if not.
 	 */
-	public boolean SeekPegOffset()
+	
+	boolean SeekPegOffset()
 	{
 		int	centerX1 = 0, centerX2 = 0, pegX;
 		
@@ -66,13 +69,21 @@ public class Vision
 			centerX2 = targetRectangle2.x + targetRectangle2.width / 2;
 
 			if (centerX1 < centerX2)
+			{
 				pegX = ((centerX2 - centerX1) / 2) + centerX1;
+				
+				pegDistance = centerX2 - centerX1;
+			}
 			else
+			{
 				pegX = ((centerX1 - centerX2) / 2) + centerX2;
+				
+				pegDistance = centerX1 - centerX2;
+			}
 				
 			pegOffset = imageCenter - pegX;
 			
-			Util.consoleLog("cX1=%d  cX2=%d  pegX=%d  pegOffset=%d", centerX1, centerX2, pegX, pegOffset);
+			Util.consoleLog("cX1=%d  cX2=%d  pegX=%d  pegOffset=%d  dist=%d", centerX1, centerX2, pegX, pegOffset, pegDistance);
 
 			return true;
 		}
@@ -84,8 +95,20 @@ public class Vision
 	 * Return last peg offset from center of camera image.
 	 * @return Peg offset from  center, - is left of center + is right of center.
 	 */
+	
 	public int getPegOffset()
 	{
 		return pegOffset;
+	}
+	
+	/**
+	 * Return measurement of distance from targets. 280 appears to be value to
+	 * stop at when approaching the peg.
+	 * @return Distance between peg targets measured in pixels
+	 */
+	
+	public int getDistance()
+	{
+		return pegDistance;
 	}
 }

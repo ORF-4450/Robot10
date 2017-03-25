@@ -28,7 +28,9 @@ import org.opencv.objdetect.*;
 public class PegPipeline implements VisionPipeline {
 
 	//Outputs
+	private Mat resizeImageOutput = new Mat();
 	private Mat hsvThresholdOutput = new Mat();
+	private Mat blurOutput = new Mat();
 	private ArrayList<MatOfPoint> findContoursOutput = new ArrayList<MatOfPoint>();
 	private ArrayList<MatOfPoint> filterContoursOutput = new ArrayList<MatOfPoint>();
 
@@ -40,27 +42,40 @@ public class PegPipeline implements VisionPipeline {
 	 * This is the primary method that runs the entire pipeline and updates the outputs.
 	 */
 	@Override	public void process(Mat source0) {
+		// Step Resize_Image0:
+		Mat resizeImageInput = source0;
+		double resizeImageWidth = 320.0;
+		double resizeImageHeight = 240.0;
+		int resizeImageInterpolation = Imgproc.INTER_CUBIC;
+		resizeImage(resizeImageInput, resizeImageWidth, resizeImageHeight, resizeImageInterpolation, resizeImageOutput);
+
 		// Step HSV_Threshold0:
-		Mat hsvThresholdInput = source0;
-		double[] hsvThresholdHue = {34.532372814288244, 111.39932131197672};
-		double[] hsvThresholdSaturation = {0.0, 35.97269347910181};
-		double[] hsvThresholdValue = {232.37409479648088, 255.0};
+		Mat hsvThresholdInput = resizeImageOutput;
+		double[] hsvThresholdHue = {0.0, 180.0};
+		double[] hsvThresholdSaturation = {0.0, 24.36859653264589};
+		double[] hsvThresholdValue = {247.66187624429628, 255.0};
 		hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, hsvThresholdOutput);
 
+		// Step Blur0:
+		Mat blurInput = hsvThresholdOutput;
+		BlurType blurType = BlurType.get("Box Blur");
+		double blurRadius = 0.0;
+		blur(blurInput, blurType, blurRadius, blurOutput);
+
 		// Step Find_Contours0:
-		Mat findContoursInput = hsvThresholdOutput;
+		Mat findContoursInput = blurOutput;
 		boolean findContoursExternalOnly = false;
 		findContours(findContoursInput, findContoursExternalOnly, findContoursOutput);
 
 		// Step Filter_Contours0:
 		ArrayList<MatOfPoint> filterContoursContours = findContoursOutput;
-		double filterContoursMinArea = 300.0;
-		double filterContoursMinPerimeter = 12.0;
-		double filterContoursMinWidth = 10.0;
+		double filterContoursMinArea = 200.0;
+		double filterContoursMinPerimeter = 40.0;
+		double filterContoursMinWidth = 5.0;
 		double filterContoursMaxWidth = 1000.0;
-		double filterContoursMinHeight = 30.0;
+		double filterContoursMinHeight = 4.0;
 		double filterContoursMaxHeight = 1000.0;
-		double[] filterContoursSolidity = {81.53476989526543, 100};
+		double[] filterContoursSolidity = {49.20962839012402, 100};
 		double filterContoursMaxVertices = 1000000.0;
 		double filterContoursMinVertices = 0.0;
 		double filterContoursMinRatio = 0.0;
@@ -70,11 +85,27 @@ public class PegPipeline implements VisionPipeline {
 	}
 
 	/**
+	 * This method is a generated getter for the output of a Resize_Image.
+	 * @return Mat output from Resize_Image.
+	 */
+	public Mat resizeImageOutput() {
+		return resizeImageOutput;
+	}
+
+	/**
 	 * This method is a generated getter for the output of a HSV_Threshold.
 	 * @return Mat output from HSV_Threshold.
 	 */
 	public Mat hsvThresholdOutput() {
 		return hsvThresholdOutput;
+	}
+
+	/**
+	 * This method is a generated getter for the output of a Blur.
+	 * @return Mat output from Blur.
+	 */
+	public Mat blurOutput() {
+		return blurOutput;
 	}
 
 	/**
@@ -95,6 +126,19 @@ public class PegPipeline implements VisionPipeline {
 
 
 	/**
+	 * Scales and image to an exact size.
+	 * @param input The image on which to perform the Resize.
+	 * @param width The width of the output in pixels.
+	 * @param height The height of the output in pixels.
+	 * @param interpolation The type of interpolation.
+	 * @param output The image in which to store the output.
+	 */
+	private void resizeImage(Mat input, double width, double height,
+		int interpolation, Mat output) {
+		Imgproc.resize(input, output, new Size(width, height), 0.0, 0.0, interpolation);
+	}
+
+	/**
 	 * Segment an image based on hue, saturation, and value ranges.
 	 *
 	 * @param input The image on which to perform the HSL threshold.
@@ -108,6 +152,71 @@ public class PegPipeline implements VisionPipeline {
 		Imgproc.cvtColor(input, out, Imgproc.COLOR_BGR2HSV);
 		Core.inRange(out, new Scalar(hue[0], sat[0], val[0]),
 			new Scalar(hue[1], sat[1], val[1]), out);
+	}
+
+	/**
+	 * An indication of which type of filter to use for a blur.
+	 * Choices are BOX, GAUSSIAN, MEDIAN, and BILATERAL
+	 */
+	enum BlurType{
+		BOX("Box Blur"), GAUSSIAN("Gaussian Blur"), MEDIAN("Median Filter"),
+			BILATERAL("Bilateral Filter");
+
+		private final String label;
+
+		BlurType(String label) {
+			this.label = label;
+		}
+
+		public static BlurType get(String type) {
+			if (BILATERAL.label.equals(type)) {
+				return BILATERAL;
+			}
+			else if (GAUSSIAN.label.equals(type)) {
+			return GAUSSIAN;
+			}
+			else if (MEDIAN.label.equals(type)) {
+				return MEDIAN;
+			}
+			else {
+				return BOX;
+			}
+		}
+
+		@Override
+		public String toString() {
+			return this.label;
+		}
+	}
+
+	/**
+	 * Softens an image using one of several filters.
+	 * @param input The image on which to perform the blur.
+	 * @param type The blurType to perform.
+	 * @param doubleRadius The radius for the blur.
+	 * @param output The image in which to store the output.
+	 */
+	private void blur(Mat input, BlurType type, double doubleRadius,
+		Mat output) {
+		int radius = (int)(doubleRadius + 0.5);
+		int kernelSize;
+		switch(type){
+			case BOX:
+				kernelSize = 2 * radius + 1;
+				Imgproc.blur(input, output, new Size(kernelSize, kernelSize));
+				break;
+			case GAUSSIAN:
+				kernelSize = 6 * radius + 1;
+				Imgproc.GaussianBlur(input,output, new Size(kernelSize, kernelSize), radius);
+				break;
+			case MEDIAN:
+				kernelSize = 2 * radius + 1;
+				Imgproc.medianBlur(input, output, kernelSize);
+				break;
+			case BILATERAL:
+				Imgproc.bilateralFilter(input, output, -1, radius, radius);
+				break;
+		}
 	}
 
 	/**
