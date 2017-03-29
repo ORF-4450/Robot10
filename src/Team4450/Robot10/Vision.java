@@ -1,6 +1,8 @@
 package Team4450.Robot10;
 
+import org.opencv.core.Mat;
 import org.opencv.core.Rect;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -15,6 +17,8 @@ public class Vision
 	private int				pegOffset = 0, pegDistance = 0;
 	private PegPipeline		pegPipeline = new PegPipeline();
 	private	int				imageCenter = CameraFeed.imageWidth / 2;
+	private	static int		imageCount = 0;
+
 
 	public Rect				targetRectangle1 = null, targetRectangle2 = null;
 
@@ -43,31 +47,38 @@ public class Vision
 	
 	boolean SeekPegOffset()
 	{
-		int	centerX1 = 0, centerX2 = 0, pegX;
+		int			centerX1 = 0, centerX2 = 0, pegX;
+		Mat			currentImage;
 		
 		Util.consoleLog();
 
-		pegPipeline.process(robot.cameraThread.getCurrentImage());
+		currentImage = robot.cameraThread.getCurrentImage();
+		
+		Imgcodecs.imwrite(String.format("/home/lvuser/image%d.jpg", imageCount), currentImage);
+
+		pegPipeline.process(currentImage);
+		
+		targetRectangle1 = targetRectangle2 = null;
 		
 		if (pegPipeline.filterContoursOutput().size() > 1)
 		{
 			targetRectangle1 = Imgproc.boundingRect(pegPipeline.filterContoursOutput().get(0));
 			targetRectangle2 = Imgproc.boundingRect(pegPipeline.filterContoursOutput().get(1));
 		}
+		else
+			Util.consoleLog("no targets found  image=%d", imageCount);
 		
-		if (targetRectangle1 != null)
-			Util.consoleLog("x1=%d y1=%d c=%d h=%d w=%d cnt=%d", targetRectangle1.x, targetRectangle1.y, centerX1, targetRectangle1.height,
-			         targetRectangle1.width, pegPipeline.filterContoursOutput().size());
-
-		if (targetRectangle2 != null)
-			Util.consoleLog("x2=%d y2=%d c=%d h=%d w=%d cnt=%d", targetRectangle2.x, targetRectangle2.y, centerX2, targetRectangle2.height,
-			         targetRectangle2.width, pegPipeline.filterContoursOutput().size());
-			
 		if (targetRectangle1 != null && targetRectangle2 != null)
 		{
 			centerX1 = targetRectangle1.x + targetRectangle1.width / 2;
 			centerX2 = targetRectangle2.x + targetRectangle2.width / 2;
 
+			Util.consoleLog("x1=%d y1=%d c=%d h=%d w=%d cnt=%d", targetRectangle1.x, targetRectangle1.y, centerX1, targetRectangle1.height,
+			         targetRectangle1.width, pegPipeline.filterContoursOutput().size());
+
+			Util.consoleLog("x2=%d y2=%d c=%d h=%d w=%d cnt=%d", targetRectangle2.x, targetRectangle2.y, centerX2, targetRectangle2.height,
+			         targetRectangle2.width, pegPipeline.filterContoursOutput().size());
+			
 			if (centerX1 < centerX2)
 			{
 				pegX = ((centerX2 - centerX1) / 2) + centerX1;
@@ -83,17 +94,21 @@ public class Vision
 				
 			pegOffset = imageCenter - pegX;
 			
-			Util.consoleLog("cX1=%d  cX2=%d  pegX=%d  pegOffset=%d  dist=%d", centerX1, centerX2, pegX, pegOffset, pegDistance);
+			Util.consoleLog("cX1=%d  cX2=%d  pegX=%d  pegOffset=%d  dist=%d  image=%d", centerX1, centerX2, pegX, pegOffset, pegDistance, imageCount);
 
+			imageCount++;
+			
 			return true;
 		}
 
+		imageCount++;
+		
 		return false;
 	}
 	
 	/**
 	 * Return last peg offset from center of camera image.
-	 * @return Peg offset from  center, - is left of center + is right of center.
+	 * @return Peg offset from center in pixels, + is left of center - is right of center.
 	 */
 	
 	public int getPegOffset()

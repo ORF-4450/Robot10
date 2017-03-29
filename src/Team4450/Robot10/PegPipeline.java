@@ -42,6 +42,9 @@ public class PegPipeline implements VisionPipeline {
 	 * This is the primary method that runs the entire pipeline and updates the outputs.
 	 */
 	@Override	public void process(Mat source0) {
+		findContoursOutput = new ArrayList<MatOfPoint>();
+		filterContoursOutput = new ArrayList<MatOfPoint>();
+		
 		// Step Resize_Image0:
 		Mat resizeImageInput = source0;
 		double resizeImageWidth = 320.0;
@@ -69,7 +72,7 @@ public class PegPipeline implements VisionPipeline {
 
 		// Step Filter_Contours0:
 		ArrayList<MatOfPoint> filterContoursContours = findContoursOutput;
-		double filterContoursMinArea = 200.0;
+		double filterContoursMinArea = 100.0;
 		double filterContoursMinPerimeter = 40.0;
 		double filterContoursMinWidth = 5.0;
 		double filterContoursMaxWidth = 1000.0;

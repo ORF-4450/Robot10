@@ -144,7 +144,7 @@ class Teleop
 			{
 				rightY = stickLogCorrection(rightStick.GetY());		// fwd/back right
 				
-				leftY = stickLogCorrection(utilityStick.GetY());	// up/down
+				leftY = stickLogCorrection85(utilityStick.GetY());	// up/down
 			} 
 // Not inverting controls at this time. Do not do this!			
 //			else if (invertDrive)
@@ -213,6 +213,18 @@ class Teleop
 	private double stickLogCorrection(double joystickValue)
 	{
 		double base = Math.pow(2, 1/3) + Math.pow(2, 1/3);
+		
+		if (joystickValue > 0)
+			joystickValue = baseLog(base, joystickValue + 1);
+		else if (joystickValue < 0)
+			joystickValue = -baseLog(base, -joystickValue + 1);
+			
+		return joystickValue;
+	}
+	
+	private double stickLogCorrection85(double joystickValue)
+	{
+		double base = 2.22;
 		
 		if (joystickValue > 0)
 			joystickValue = baseLog(base, joystickValue + 1);
