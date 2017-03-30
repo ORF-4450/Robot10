@@ -15,6 +15,7 @@ public class Autonomous
 	private GearBox		gearBox;
 	private Vision		vision;
 	private Shooter		shooter;
+	private BallPickup	ballPickup;
 	
 	//	encoder is plugged into dio port 1 - orange=+5v blue=signal, dio port 2 black=gnd yellow=signal. 
 	private Encoder		encoder = new Encoder(1, 2, true, EncodingType.k4X);
@@ -34,6 +35,8 @@ public class Autonomous
 		vision = Vision.getInstance(robot);
 		
 		shooter = new Shooter(robot);
+		
+		ballPickup = new BallPickup(robot);
 	}
 
 	public void dispose()
@@ -44,6 +47,7 @@ public class Autonomous
 		if (gearBox != null) gearBox.dispose();
 		if (gearPickup != null) gearPickup.dispose();
 		if (shooter != null) shooter.dispose();
+		if (ballPickup != null) ballPickup.dispose();
 	}
 
 	public void execute()
@@ -98,9 +102,25 @@ public class Autonomous
 				
 				break;
 				
-			case 7:		// TestDrive backward and stop.
+			case 7:		// Drive then shoot, left start.
+				autoShoot(true);
+				
+				break;
+
+			case 8:		// Drive then shoot, right start.
+				autoShoot(false);
+				
+				break;
+				
+			case 9:		// Place gear center start with vision.
+				placeGearCenter(5800, false);
+				
+				break;
+				
+			case 10:	// Test.
 				//autoDrive(-.50, 9000, true);
-				autoDriveVision(-.40, 3000, true);
+				//autoDriveVision(-.40, 3000, true);
+				//autoShoot();
 				
 				break;
 		}
@@ -115,7 +135,7 @@ public class Autonomous
 		// Drive forward to peg and stop.
 		
 		if (useVision)
-			autoDriveVision(-.60, encoderCounts, true);
+			autoDriveVision(-.50, encoderCounts, true);
 		else
 			autoDrive(-.60, encoderCounts, true);
 		
@@ -131,7 +151,7 @@ public class Autonomous
 		
 		// Drive backward a bit.
 
-		autoDrive(.50, 1000, true);
+		autoDrive(.30, 1000, true);
 		
 		gearPickup.stopMotor();
 	}
@@ -143,7 +163,7 @@ public class Autonomous
 		// Drive forward to be on a 55 degree angle with side peg and stop.
 		
 		if (leftSide)
-			autoDrive(-.60, 5600, true);
+			autoDrive(-.50, 5600, true);
 		else
 			autoDrive(-.50, 5600, true);
 		
@@ -156,7 +176,9 @@ public class Autonomous
 			// Rotate left
 			autoRotate(.60, 55);
 		
-		Timer.delay(.5);
+		// Lef the camera image settle down.
+		
+		if (useVision) Timer.delay(.25);
 		
 		// Place gear.
 		
@@ -164,16 +186,55 @@ public class Autonomous
 		
 		// Move and shoot balls if on left side.
 		
-		if (leftSide)
-		{
-			autoRotate(.60, 20);
-			
-			shooter.start(shooter.SHOOTER_HIGH_POWER);
-			
-			autoDrive(.60, 6200, true);
-			
-			shooter.startFeeding();
-		}
+//		if (leftSide)
+//		{
+//			autoRotate(.60, 20);
+//			
+//			shooter.start(shooter.SHOOTER_HIGH_POWER);
+//			
+//			autoDrive(.80, 6200, true);
+//			
+//			shooter.startFeeding();
+//		}
+	}
+	
+	private void autoShoot(boolean left)
+	{
+		double power = -.60;
+		int		encoderCountsFwd = 6200, encoderCountsBack = 3400, angle = 25;
+		
+		Util.consoleLog("pwr=%f  encf=%d  encb=%d  angle=%d", power, encoderCountsFwd, encoderCountsBack, angle);
+	
+		// Drive forward to cross base line.
+		
+		autoDrive(power, encoderCountsFwd, true);
+		
+		// Turn to point at boiler.
+		
+		if (left)
+			autoRotate(power, angle);	
+		else
+			autoRotate(-power, angle);
+		
+		// Back up to shooting location;
+		
+		autoDrive(-power, encoderCountsBack, true);
+		
+		// Shoot balls.
+		
+		gearPickup.lowerPickup();
+		
+		shooter.start(shooter.SHOOTER_HIGH_POWER);
+		
+		Timer.delay(3);
+		
+		ballPickup.start();
+		
+		shooter.startFeeding();
+		
+		// Run until auto is over.
+		
+		while (robot.isEnabled()) Timer.delay(1);
 	}
 	
 	// Auto drive in set direction and power for specified encoder count. Stops
@@ -250,7 +311,7 @@ public class Autonomous
 	private void autoDriveVision(double power, int encoderCounts, boolean enableBrakes)
 	{
 		int		distance, prevDistance = 0;
-		double	pegOffset, gain = .005, power2 = power, delay = .25;
+		double	pegOffset, gain = .002, power2 = power, delay = .25;
 		boolean	driving = true;
 		
 		Util.consoleLog("pwr=%.2f, count=%d, brakes=%b", power, encoderCounts, enableBrakes);
@@ -258,6 +319,8 @@ public class Autonomous
 		if (robot.isComp) robot.SetCANTalonBrakeMode(enableBrakes);
 
 		encoder.reset();
+		
+		robot.monitorDistanceThread.setDelay(delay);
 		
 		while (driving) 
 		{
@@ -316,7 +379,9 @@ public class Autonomous
 			
 			// If no distance, we are driving on encoder so use very short delay. If we have distance
 			// measurement, then use longer delay between image evaluations. When close to the target
-			// distance, increase the rate of image checks and drop the speed.
+			// distance, increase the rate of image checks and drop the speed. Also, when far from the
+			// target we need a small gain so that robot responds minimally to being off center. When
+			// we get close we need to up the gain so the robot responds more quickly to off center.
 			
 			if (distance != 0 && distance < 100)
 			{
@@ -326,13 +391,9 @@ public class Autonomous
 			else if (distance != 0)
 			{
 				delay = .10;
+				gain = .005;
 				power2 = power / 2;
 			}
-//			else
-//			{
-//				delay = .10;
-//				power2 = power;
-//			}
 			
 			// Invert offset for backwards.
 			
@@ -348,22 +409,22 @@ public class Autonomous
 			else if (pegOffset > 1)
 				pegOffset = 1;
 			
-			Util.consoleLog("power=%.2f  offset=%.2f  dist=%d  delay=%.2f  usd=%.2f", power2, pegOffset, distance, delay,
+			Util.consoleLog("power=%.2f  offset=%.3f  dist=%d  delay=%.2f  usd=%.2f", power2, pegOffset, distance, delay,
 							robot.monitorDistanceThread.getRangeInches());
 			
-			LCD.printLine(5, "power=%.2f  offset=%.2f  dist=%d  delay=%.2f  usd=%.2f", power2, pegOffset, distance, delay,
+			LCD.printLine(5, "power=%.2f  offset=%.3f  dist=%d  delay=%.2f  usd=%.2f", power2, pegOffset, distance, delay,
 							robot.monitorDistanceThread.getRangeInches());
 
-			// The curve parameter is - to turn left + to turn right. Offset is - if veering right so
-			// passing in - curve will cause turn left correcting veer to the right. Curve parameter is
-			// + to turn right and offset is + if veering left so passing in + curve will cause turn right
-			// correcting veer to the left.
+			// Offset is + if robot veering right, so we invert to - because - curve is to the left.
+			// Offset is - if robot veering left, so we invert to + because + curve is to the right.
 			
-			robot.robotDrive.drive(power2, pegOffset);
+			robot.robotDrive.drive(power2, -pegOffset);
 			
 			Timer.delay(delay);
 		}	// end of while (driving).
 
 		robot.robotDrive.tankDrive(0, 0, true);				
+		
+		robot.monitorDistanceThread.setDelay(1.0);
 	}
 }

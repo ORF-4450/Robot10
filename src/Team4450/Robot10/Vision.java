@@ -108,7 +108,8 @@ public class Vision
 	
 	/**
 	 * Return last peg offset from center of camera image.
-	 * @return Peg offset from center in pixels, + is left of center - is right of center.
+	 * @return Peg offset from center in pixels, + is left of center meaning robot is veering right.
+	 * - is right of center meaning robot is veering left..
 	 */
 	
 	public int getPegOffset()
