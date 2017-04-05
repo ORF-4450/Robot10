@@ -176,7 +176,7 @@ public class Shooter
 
 		SmartDashboard.putBoolean("DispenserMotor", true);
 		
-		feederMotor.set(-.35);	// comp=.30
+		feederMotor.set(-.60);	// comp=.30
 		indexerMotor.set(-.80);	// comp=.50
 	}
 	

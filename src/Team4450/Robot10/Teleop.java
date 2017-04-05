@@ -422,7 +422,7 @@ class Teleop
 					if (button.latchedState)
 					{
 	    				ballPickup.start();
-	    				if (!shooter.isRunning()) shooter.startFeedingReverse();
+	    				//if (!shooter.isRunning()) shooter.startFeedingReverse();
 					}
 	    			else
 	    			{

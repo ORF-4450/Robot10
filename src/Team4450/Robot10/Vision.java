@@ -52,7 +52,11 @@ public class Vision
 		
 		Util.consoleLog();
 
+		if (imageCount > 100) imageCount = 0;
+		
 		currentImage = robot.cameraThread.getCurrentImage();
+		
+		// Images overwrite any existing image with the same number.
 		
 		Imgcodecs.imwrite(String.format("/home/lvuser/image%d.jpg", imageCount), currentImage);
 
@@ -79,6 +83,8 @@ public class Vision
 			Util.consoleLog("x2=%d y2=%d c=%d h=%d w=%d cnt=%d", targetRectangle2.x, targetRectangle2.y, centerX2, targetRectangle2.height,
 			         targetRectangle2.width, pegPipeline.filterContoursOutput().size());
 			
+			// Figure out which target is the "left" one so the math is correct.
+			
 			if (centerX1 < centerX2)
 			{
 				pegX = ((centerX2 - centerX1) / 2) + centerX1;
@@ -91,7 +97,10 @@ public class Vision
 				
 				pegDistance = centerX1 - centerX2;
 			}
-				
+			
+			// Figure out the pegX locations offset from center of image which is where
+			// the robot is pointing.
+			
 			pegOffset = imageCenter - pegX;
 			
 			Util.consoleLog("cX1=%d  cX2=%d  pegX=%d  pegOffset=%d  dist=%d  image=%d", centerX1, centerX2, pegX, pegOffset, pegDistance, imageCount);

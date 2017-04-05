@@ -356,7 +356,7 @@ public class Autonomous
 				if (distance > 150 && distance <= prevDistance)
 					driving = false;
 				else
-					driving = robot.isEnabled() && distance < 205;
+					driving = robot.isEnabled() && distance < 200;
 				
 				if (!driving) 
 				{
