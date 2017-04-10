@@ -18,7 +18,7 @@ public class Autonomous
 	private BallPickup	ballPickup;
 	
 	//	encoder is plugged into dio port 1 - orange=+5v blue=signal, dio port 2 black=gnd yellow=signal. 
-	private Encoder		encoder = new Encoder(1, 2, true, EncodingType.k4X);
+	private Encoder		encoder = new Encoder(3, 4, true, EncodingType.k4X);
 
 	Autonomous(Robot robot)
 	{
@@ -48,6 +48,11 @@ public class Autonomous
 		if (gearPickup != null) gearPickup.dispose();
 		if (shooter != null) shooter.dispose();
 		if (ballPickup != null) ballPickup.dispose();
+	}
+	
+	private boolean isAutoActive()
+	{
+		return robot.isEnabled() && robot.isAutonomous();
 	}
 
 	public void execute()
@@ -113,7 +118,7 @@ public class Autonomous
 				break;
 				
 			case 9:		// Place gear center start with vision.
-				placeGearCenter(5800, false);
+				placeGearCenter(5500, true);
 				
 				break;
 				
@@ -139,15 +144,17 @@ public class Autonomous
 		else
 			autoDrive(-.60, encoderCounts, true);
 		
-		// Start gear pickup motor in reverse.
+		if (!isAutoActive()) return;
 		
+		// Start gear pickup motor in reverse.
+
 		gearPickup.startMotorOut();
 		
-		Timer.delay(.500);
+		Timer.delay(.5);
 		
 		gearPickup.lowerPickup();
 		
-		Timer.delay(.500);
+		Timer.delay(.5);
 		
 		// Drive backward a bit.
 
@@ -167,6 +174,8 @@ public class Autonomous
 		else
 			autoDrive(-.50, 5600, true);
 		
+		if (!isAutoActive()) return;
+		
 		// rotate as right or left 90 degrees.
 		
 		if (leftSide)
@@ -175,6 +184,8 @@ public class Autonomous
 		else
 			// Rotate left
 			autoRotate(.60, 55);
+		
+		if (!isAutoActive()) return;
 		
 		// Lef the camera image settle down.
 		
@@ -201,9 +212,9 @@ public class Autonomous
 	private void autoShoot(boolean left)
 	{
 		double power = -.60;
-		int		encoderCountsFwd = 6200, encoderCountsBack = 3400, angle = 25;
+		int		encoderCountsFwd = 5400, encoderCountsBack = 3700, angle = 31;
 		
-		Util.consoleLog("pwr=%f  encf=%d  encb=%d  angle=%d", power, encoderCountsFwd, encoderCountsBack, angle);
+		Util.consoleLog("pwr=%.2f  encf=%d  encb=%d  angle=%d", power, encoderCountsFwd, encoderCountsBack, angle);
 	
 		// Drive forward to cross base line.
 		
@@ -216,9 +227,13 @@ public class Autonomous
 		else
 			autoRotate(-power, angle);
 		
+		if (!isAutoActive()) return;
+		
 		// Back up to shooting location;
 		
 		autoDrive(-power, encoderCountsBack, true);
+		
+		if (!isAutoActive()) return;
 		
 		// Shoot balls.
 		
@@ -234,7 +249,7 @@ public class Autonomous
 		
 		// Run until auto is over.
 		
-		while (robot.isEnabled()) Timer.delay(1);
+		while (isAutoActive()) Timer.delay(1);
 	}
 	
 	// Auto drive in set direction and power for specified encoder count. Stops
@@ -245,14 +260,14 @@ public class Autonomous
 		int		angle;
 		double	gain = .03;
 		
-		Util.consoleLog("pwr=%f, count=%d, brakes=%b", power, encoderCounts, enableBrakes);
+		Util.consoleLog("pwr=%.2f, count=%d, brakes=%b", power, encoderCounts, enableBrakes);
 
 		if (robot.isComp) robot.SetCANTalonBrakeMode(enableBrakes);
 
 		encoder.reset();
 		robot.navx.resetYaw();
 		
-		while (robot.isEnabled() && Math.abs(encoder.get()) < encoderCounts) 
+		while (isAutoActive() && Math.abs(encoder.get()) < encoderCounts) 
 		{
 			LCD.printLine(4, "encoder=%d", encoder.get());
 			
@@ -282,6 +297,8 @@ public class Autonomous
 		}
 
 		robot.robotDrive.tankDrive(0, 0, true);				
+		
+		Util.consoleLog("end: actual count=%d", Math.abs(encoder.get()));
 	}
 	
 	// Auto rotate left or right the specified angle. Left/right from robots forward view.
@@ -291,13 +308,13 @@ public class Autonomous
 	
 	private void autoRotate(double power, int angle)
 	{
-		Util.consoleLog("pwr=%.3f  angle=%d", power, angle);
+		Util.consoleLog("pwr=%.2f  angle=%d", power, angle);
 		
 		robot.navx.resetYaw();
 		
 		robot.robotDrive.tankDrive(power, -power);
 
-		while (robot.isEnabled() && Math.abs((int) robot.navx.getYaw()) < angle) {Timer.delay(.020);} 
+		while (isAutoActive() && Math.abs((int) robot.navx.getYaw()) < angle) {Timer.delay(.020);} 
 		
 		robot.robotDrive.tankDrive(0, 0);
 	}
@@ -356,7 +373,7 @@ public class Autonomous
 				if (distance > 150 && distance <= prevDistance)
 					driving = false;
 				else
-					driving = robot.isEnabled() && distance < 200;
+					driving = isAutoActive() && distance < 195;
 				
 				if (!driving) 
 				{
@@ -366,7 +383,7 @@ public class Autonomous
 			}
 			else
 			{
-				driving = robot.isEnabled() && Math.abs(encoder.get()) < encoderCounts;
+				driving = isAutoActive() && Math.abs(encoder.get()) < encoderCounts;
 				
 				if (!driving) 
 				{

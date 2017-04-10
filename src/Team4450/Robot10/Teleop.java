@@ -29,7 +29,7 @@ class Teleop
 	private Vision				vision;
 	
 	// Wheel encoder is plugged into dio port 1 - orange=+5v blue=signal, dio port 2 black=gnd yellow=signal. 
-	private Encoder				encoder = new Encoder(1, 2, true, EncodingType.k4X);
+	private Encoder				encoder = new Encoder(3, 4, true, EncodingType.k4X);
 
 	// Encoder ribbon cable to dio ports: ribbon wire 2 = orange, 5 = yellow, 7 = blue, 10 = black
 
@@ -145,6 +145,8 @@ class Teleop
 				rightY = stickLogCorrection(rightStick.GetY());		// fwd/back right
 				
 				leftY = stickLogCorrection85(utilityStick.GetY());	// up/down
+				
+				if (leftY < 0) leftY = 0;
 			} 
 // Not inverting controls at this time. Do not do this!			
 //			else if (invertDrive)
@@ -316,6 +318,10 @@ class Teleop
 	    		case ROCKER_LEFT_FRONT:
 					if (robot.cameraThread != null) robot.cameraThread.ChangeCamera();
 					//invertDrive = !invertDrive;
+	    			break;
+	    			
+	    		case ROCKER_RIGHT:
+					if (robot.cameraThread != null) robot.cameraThread.ChangeCamera();
 	    			break;
     				
 				default:
