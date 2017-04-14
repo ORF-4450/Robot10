@@ -328,7 +328,7 @@ public class Autonomous
 	private void autoDriveVision(double power, int encoderCounts, boolean enableBrakes)
 	{
 		int		distance, prevDistance = 0;
-		double	pegOffset, gain = .002, power2 = power, delay = .25;
+		double	pegOffset, gain = .002, power2 = power, delay = .10;	//.25;
 		boolean	driving = true;
 		
 		Util.consoleLog("pwr=%.2f, count=%d, brakes=%b", power, encoderCounts, enableBrakes);
@@ -402,7 +402,7 @@ public class Autonomous
 			
 			if (distance != 0 && distance < 100)
 			{
-				delay = .25;
+				delay = .10;	//.25;
 				power2 = power;
 			}
 			else if (distance != 0)

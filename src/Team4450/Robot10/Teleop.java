@@ -22,7 +22,7 @@ class Teleop
 	public  JoyStick			rightStick, leftStick, utilityStick;
 	public  LaunchPad			launchPad;
 	private	GearBox				gearBox;
-	private boolean				autoTarget, invertDrive;
+	private boolean				autoTarget, invertDrive, singleStick;
 	private BallPickup			ballPickup;
 	private Shooter				shooter;
 	private GearPickup			gearPickup;
@@ -71,7 +71,7 @@ class Teleop
 
 	void OperatorControl()
 	{
-		double	rightY, leftY, utilX;
+		double	rightY = 0, leftY = 0, utilX = 0, rightX = 0, leftX = 0;
         
         // Motor safety turned off during initialization.
         robot.robotDrive.setSafetyEnabled(false);
@@ -156,8 +156,11 @@ class Teleop
 //			}
 			else
 			{
-				rightY = stickLogCorrection(rightStick.GetY());	// fwd/back right
-    			leftY = stickLogCorrection(leftStick.GetY());	// fwd/back left
+				rightY = stickLogCorrection(rightStick.GetY());	// fwd/back
+    			leftY = stickLogCorrection(leftStick.GetY());	// fwd/back
+
+    			rightX = stickLogCorrection(rightStick.GetX());	// left/right
+    			leftX = stickLogCorrection(leftStick.GetX());	// left/right
 			}
 			
 			utilX = utilityStick.GetX();
@@ -174,8 +177,23 @@ class Teleop
 			// Set wheel motors.
 			// Do not feed JS input to robotDrive if we are controlling the motors in automatic functions.
 
-			if (!autoTarget) robot.robotDrive.tankDrive(leftY, rightY);
-
+			//if (!autoTarget) robot.robotDrive.tankDrive(leftY, rightY);
+			
+			// Two drive modes, full tank and single stick. Switch on right stick trigger.
+			
+			if (!autoTarget) 
+			{
+				if (singleStick)
+				{
+					if (rightY == 0)
+						robot.robotDrive.tankDrive(leftX, -leftX);	// Left stick rotate when right stick at zero.
+					else
+						robot.robotDrive.drive(rightY, rightX);		// Right stick fwd/back, arc on left/right.
+				}
+				else
+					robot.robotDrive.tankDrive(leftY, rightY);		// Normal tank drive.
+			}
+			
 			// End of driving loop.
 			
 			Timer.delay(.020);	// wait 20ms for update from driver station.
@@ -346,8 +364,9 @@ class Teleop
 			switch(button.id)
 			{
 				case TRIGGER:
-					if (robot.cameraThread != null) robot.cameraThread.ChangeCamera();
-
+					//if (robot.cameraThread != null) robot.cameraThread.ChangeCamera();
+					singleStick = !singleStick;
+					
 					break;
 					
 				case TOP_LEFT:
