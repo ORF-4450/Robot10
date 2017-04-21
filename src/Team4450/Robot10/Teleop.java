@@ -3,14 +3,9 @@ package Team4450.Robot10;
 
 import java.lang.Math;
 
-import org.opencv.core.Rect;
-import org.opencv.imgproc.Imgproc;
-
 import Team4450.Lib.*;
 import Team4450.Lib.JoyStick.*;
 import Team4450.Lib.LaunchPad.*;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
@@ -22,7 +17,7 @@ class Teleop
 	public  JoyStick			rightStick, leftStick, utilityStick;
 	public  LaunchPad			launchPad;
 	private	GearBox				gearBox;
-	private boolean				autoTarget, invertDrive, singleStick;
+	private boolean				autoTarget, invertDrive, altDriveMode;
 	private BallPickup			ballPickup;
 	private Shooter				shooter;
 	private GearPickup			gearPickup;
@@ -72,7 +67,10 @@ class Teleop
 	void OperatorControl()
 	{
 		double	rightY = 0, leftY = 0, utilX = 0, rightX = 0, leftX = 0;
-        
+		double	gain = .01;
+		boolean	steeringAssistMode = false;
+		int		angle;
+		
         // Motor safety turned off during initialization.
         robot.robotDrive.setSafetyEnabled(false);
 
@@ -179,16 +177,57 @@ class Teleop
 
 			//if (!autoTarget) robot.robotDrive.tankDrive(leftY, rightY);
 			
-			// Two drive modes, full tank and single stick. Switch on right stick trigger.
+			// Two drive modes, full tank and alternate. Switch on right stick trigger.
 			
 			if (!autoTarget) 
 			{
-				if (singleStick)
-				{
-					if (rightY == 0)
-						robot.robotDrive.tankDrive(leftX, -leftX);	// Left stick rotate when right stick at zero.
+				if (altDriveMode)
+//				{	// single stick drive on right with rotate on left
+//					if (rightY == 0)
+//						robot.robotDrive.tankDrive(leftX, -leftX);	// Left stick rotate when right stick at zero.
+//					else
+//						robot.robotDrive.drive(rightY, rightX);		// Right stick fwd/back, arc on left/right.
+//				}
+								
+//				{	// two stick with fwd/back on left stick, left/right on right.
+//					robot.robotDrive.drive(leftY, rightX);		// Right stick fwd/back, arc on left/right.
+//				}
+				
+				{	// normal tank with straight drive assist when sticks within 10% of each other.
+					if (leftRightEqual(leftY, rightY, 10) && Math.abs(rightY) > .50)
+					{
+						if (!steeringAssistMode) robot.navx.resetYaw();
+
+						// Angle is negative if robot veering left, positive if veering right when going forward.
+						// It is opposite when going backward. Note that for this robot, - power means forward and
+						// + power means backward.
+						
+						angle = (int) robot.navx.getYaw();
+
+						LCD.printLine(5, "angle=%d", angle);
+						
+						// Invert angle for backwards.
+						
+						if (rightY > 0) angle = -angle;
+						
+						//Util.consoleLog("angle=%d", angle);
+						
+						// Note we invert sign on the angle because we want the robot to turn in the opposite
+						// direction than it is currently going to correct it. So a + angle says robot is veering
+						// right so we set the turn value to - because - is a turn left which corrects our right
+						// drift.
+						
+						robot.robotDrive.drive(rightY, -angle * gain);
+
+						steeringAssistMode = true;
+					}
 					else
-						robot.robotDrive.drive(rightY, rightX);		// Right stick fwd/back, arc on left/right.
+					{
+						steeringAssistMode = false;
+						robot.robotDrive.tankDrive(leftY, rightY);		// Normal tank drive.
+					}
+					
+				  SmartDashboard.putBoolean("Overload", steeringAssistMode);
 				}
 				else
 					robot.robotDrive.tankDrive(leftY, rightY);		// Normal tank drive.
@@ -204,6 +243,15 @@ class Teleop
 		Util.consoleLog("end");
 	}
 
+	private boolean leftRightEqual(double left, double right, double percent)
+	{
+		//if (left == right) return true;
+		
+		if (Math.abs(left - right) <= (1 * (percent / 100))) return true;
+		
+		return false;
+	}
+	
 	// Map joystick y value of 0.0-1.0 to the motor working power range of approx 0.5-1.0
 	
 	private double stickCorrection(double joystickValue)
@@ -365,7 +413,7 @@ class Teleop
 			{
 				case TRIGGER:
 					//if (robot.cameraThread != null) robot.cameraThread.ChangeCamera();
-					singleStick = !singleStick;
+					altDriveMode = !altDriveMode;
 					
 					break;
 					

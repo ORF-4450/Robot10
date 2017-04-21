@@ -71,6 +71,7 @@ Trigger					Toggle gearbox speed.
 Right Joystick
 Button Name				Function
 -----------------------------------------------------------------------------------
+Trigger					Toggle driving mode between tank and single-stick.
 Top_Left				Toggle camera view.
 
 
