@@ -32,7 +32,7 @@ import com.ctre.CANTalon.*;
 
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC10-04.20.17-01";
+  static final String  	PROGRAM_NAME = "RAC10-05.11.17-01";
 
   // Motor CAN ID/PWM port assignments (1=left-front, 2=left-rear, 3=right-front, 4=right-rear)
   CANTalon				LFCanTalon, LRCanTalon, RFCanTalon, RRCanTalon, LSlaveCanTalon, RSlaveCanTalon;
@@ -62,7 +62,8 @@ public class Robot extends SampleRobot
   int                       location;
     
   Thread               	monitorBatteryThread, monitorCompressorThread, monitorPDPThread;
-  MonitorDistanceMBX	monitorDistanceThread;
+  //MonitorDistanceMBX	monitorDistanceThread;
+  MonitorDistance		monitorDistanceThread;
   CameraFeed			cameraThread;
   
   NavX					navx;
@@ -173,9 +174,11 @@ public class Robot extends SampleRobot
 //        gyro.calibrate();
    		
    		// Create NavX object here so it has time to calibrate before we
-   		// use it. Takes 10 seconds.
+   		// use it. Takes 10 seconds. Must appear before CamerFeed is created.
    		
-   		navx = NavX.getInstance();
+   		navx = NavX.getInstance(NavX.PortType.SPI);
+   		
+   		navx.dumpValuesToNetworkTables();
 
    		// Start the battery, compressor, PDP and camera feed monitoring Tasks.
 
@@ -195,7 +198,8 @@ public class Robot extends SampleRobot
    		
    		// Start thread to monitor distance sensor. Uses Analog port 1.
    		
-   		monitorDistanceThread = MonitorDistanceMBX.getInstance(this);
+   		//monitorDistanceThread = MonitorDistanceMBX.getInstance(this);
+   		monitorDistanceThread = MonitorDistance.getInstance(this, 5);
    		monitorDistanceThread.start();
    		
    		Util.consoleLog("end");

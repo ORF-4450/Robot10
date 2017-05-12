@@ -6,6 +6,8 @@ import java.lang.Math;
 import Team4450.Lib.*;
 import Team4450.Lib.JoyStick.*;
 import Team4450.Lib.LaunchPad.*;
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
@@ -125,6 +127,8 @@ class Teleop
         //robot.gyro.reset();
         robot.navx.resetYaw();
         
+        robot.navx.setHeading(90);
+        
         // Reset encoder.
         encoder.reset();
 
@@ -167,8 +171,8 @@ class Teleop
 			LCD.printLine(4, "leftY=%.4f  rightY=%.4f  utilX=%.4f", leftY, rightY, utilX);
 			LCD.printLine(5, "encoder=%d,  shootenc=%d", encoder.get(), shooter.tlEncoder.get());
 			//LCD.printLine(5, "gyroAngle=%d, gyroRate=%d", (int) robot.gyro.getAngle(), (int) robot.gyro.getRate());
-			LCD.printLine(6, "yaw=%.0f, total=%.0f, rate=%.3f", robot.navx.getYaw(), robot.navx.getTotalYaw(), 
-					robot.navx.getYawRate());
+			LCD.printLine(6, "yaw=%.2f, total=%.2f, rate=%.2f, hdng=%.2f", robot.navx.getYaw(), robot.navx.getTotalYaw(), 
+					robot.navx.getYawRate(), robot.navx.getHeading());
 			LCD.printLine(7, "shootenc=%d rpm=%.0f pwr=%.2f", shooter.shooterSpeedSource.get(), 
 					shooter.shooterSpeedSource.getRate() * 60, shooter.motor.get());
 
@@ -233,6 +237,10 @@ class Teleop
 					robot.robotDrive.tankDrive(leftY, rightY);		// Normal tank drive.
 			}
 			
+			// Update the robot heading indicator on the DS.
+			
+	   		SmartDashboard.putNumber("Gyro", robot.navx.getHeading());
+
 			// End of driving loop.
 			
 			Timer.delay(.020);	// wait 20ms for update from driver station.
@@ -414,6 +422,7 @@ class Teleop
 				case TRIGGER:
 					//if (robot.cameraThread != null) robot.cameraThread.ChangeCamera();
 					altDriveMode = !altDriveMode;
+					robot.navx.resetYaw();	// for heading testing only. Remove at end of test.
 					
 					break;
 					
