@@ -9,9 +9,16 @@ c:\users\yourusername\wpilib\user\java\lib. Download Robot10 and import into Ecl
 the lib directory and restart Eclipse. RobotLib will be integrated into your Robo10 project. After that, if
 RobotLib changes, just download the new RobotLib jars to the lib directory and refresh your Robot10 project.
 ****************************************************************************************************************
+Version 10.1
+
+*	Merge 2017 season development branch "rac" into master at end of season.
+
+R. Corn
+May 15, 2017
+
 Version 10.0
 
-*    Cloned from Robot9. 2016 specific code removed, cleaned up in preparation for 2017 season.
+*	Cloned from Robot9. 2016 specific code removed, cleaned up in preparation for 2017 season.
 
 R. Corn
 January 21, 2017
