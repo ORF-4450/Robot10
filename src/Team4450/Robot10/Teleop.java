@@ -175,6 +175,8 @@ class Teleop
 					robot.navx.getYawRate(), robot.navx.getHeading());
 			LCD.printLine(7, "shootenc=%d rpm=%.0f pwr=%.2f", shooter.shooterSpeedSource.get(), 
 					shooter.shooterSpeedSource.getRate() * 60, shooter.motor.get());
+			LCD.printLine(8, "pressureV=%.2f  psi=%d", robot.monitorCompressorThread.getVoltate(), robot.monitorCompressorThread.getPressure());
+			//SmartDashboard.putNumber("AirPressure", (int) robot.workingPressure.getVoltage() * 36);
 
 			// Set wheel motors.
 			// Do not feed JS input to robotDrive if we are controlling the motors in automatic functions.
