@@ -34,7 +34,7 @@ import com.ctre.CANTalon.*;
 
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC10-05.22.17-01";
+  static final String  	PROGRAM_NAME = "RAC10-05.25.17-01";
 
   // Motor CAN ID/PWM port assignments (1=left-front, 2=left-rear, 3=right-front, 4=right-rear)
   CANTalon				LFCanTalon, LRCanTalon, RFCanTalon, RRCanTalon, LSlaveCanTalon, RSlaveCanTalon;
@@ -189,7 +189,8 @@ public class Robot extends SampleRobot
    		monitorBatteryThread.start();
 
    		monitorCompressorThread = MonitorCompressor.getInstance(0);
-   		monitorCompressorThread.delay = 1.0;
+   		monitorCompressorThread.setDelay(1.0);
+   		monitorCompressorThread.SetLowPressureAlarm(50);
    		monitorCompressorThread.start();
    		
    		//monitorPDPThread = MonitorPDP.getInstance(ds, PDP);
