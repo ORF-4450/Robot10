@@ -6,11 +6,11 @@ import java.lang.Math;
 import Team4450.Lib.*;
 import Team4450.Lib.JoyStick.*;
 import Team4450.Lib.LaunchPad.*;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Encoder;
+//import edu.wpi.first.wpilibj.AnalogInput;
+//import edu.wpi.first.wpilibj.DigitalInput;
+//import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.CounterBase.EncodingType;
+//import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 class Teleop
@@ -25,11 +25,6 @@ class Teleop
 	private GearPickup			gearPickup;
 	private Vision				vision;
 	
-	// Wheel encoder is plugged into dio port 1 - orange=+5v blue=signal, dio port 2 black=gnd yellow=signal. 
-	private Encoder				encoder = new Encoder(3, 4, true, EncodingType.k4X);
-
-	// Encoder ribbon cable to dio ports: ribbon wire 2 = orange, 5 = yellow, 7 = blue, 10 = black
-
 	// Constructor.
 	
 	Teleop(Robot robot)
@@ -63,7 +58,6 @@ class Teleop
 		if (ballPickup != null) ballPickup.dispose();
 		if (shooter != null) shooter.dispose();
 		if (gearPickup != null) gearPickup.dispose();
-		if (encoder != null) encoder.free();
 	}
 
 	void OperatorControl()
@@ -74,19 +68,20 @@ class Teleop
 		int		angle;
 		
         // Motor safety turned off during initialization.
-        robot.robotDrive.setSafetyEnabled(false);
+		Devices.robotDrive.setSafetyEnabled(false);
 
 		Util.consoleLog();
 		
 		LCD.printLine(1, "Mode: OperatorControl");
-		LCD.printLine(2, "All=%s, Start=%d, FMS=%b", robot.alliance.name(), robot.location, robot.ds.isFMSAttached());
+		LCD.printLine(2, "All=%s, Start=%d, FMS=%b", robot.alliance.name(), robot.location, Devices.ds.isFMSAttached());
 		
 		// Configure LaunchPad and Joystick event handlers.
 		
-		launchPad = new LaunchPad(robot.launchPad, LaunchPadControlIDs.BUTTON_BLUE, this);
+		launchPad = new LaunchPad(Devices.launchPad, LaunchPadControlIDs.BUTTON_BLUE, this);
 		
 		LaunchPadControl lpControl = launchPad.AddControl(LaunchPadControlIDs.ROCKER_LEFT_BACK);
 		lpControl.controlType = LaunchPadControlTypes.SWITCH;
+
 		lpControl = launchPad.AddControl(LaunchPadControlIDs.ROCKER_LEFT_FRONT);
 		lpControl.controlType = LaunchPadControlTypes.SWITCH;
 
@@ -97,17 +92,17 @@ class Teleop
         launchPad.addLaunchPadEventListener(new LaunchPadListener());
         launchPad.Start();
 
-		leftStick = new JoyStick(robot.leftStick, "LeftStick", JoyStickButtonIDs.TRIGGER, this);
+		leftStick = new JoyStick(Devices.leftStick, "LeftStick", JoyStickButtonIDs.TRIGGER, this);
 		leftStick.addJoyStickEventListener(new LeftStickListener());
         leftStick.Start();
         
-		rightStick = new JoyStick(robot.rightStick, "RightStick", JoyStickButtonIDs.TOP_LEFT, this);
+		rightStick = new JoyStick(Devices.rightStick, "RightStick", JoyStickButtonIDs.TOP_LEFT, this);
 		rightStick.AddButton(JoyStickButtonIDs.TRIGGER);
 		rightStick.AddButton(JoyStickButtonIDs.TOP_BACK);
         rightStick.addJoyStickEventListener(new RightStickListener());
         rightStick.Start();
         
-		utilityStick = new JoyStick(robot.utilityStick, "UtilityStick", JoyStickButtonIDs.TRIGGER, this);
+		utilityStick = new JoyStick(Devices.utilityStick, "UtilityStick", JoyStickButtonIDs.TRIGGER, this);
 		utilityStick.AddButton(JoyStickButtonIDs.TOP_LEFT);
 		utilityStick.AddButton(JoyStickButtonIDs.TOP_RIGHT);
 		utilityStick.AddButton(JoyStickButtonIDs.TOP_MIDDLE);
@@ -121,19 +116,19 @@ class Teleop
 		// Set CAN Talon brake mode by rocker switch setting.
         // We do this here so that the Utility stick thread has time to read the initial state
         // of the rocker switch.
-        if (robot.isComp) robot.SetCANTalonBrakeMode(lpControl.latchedState);
+        if (robot.isComp) Devices.SetCANTalonBrakeMode(lpControl.latchedState);
         
         // Set gyro/Navx to heading 0.
         //robot.gyro.reset();
-        robot.navx.resetYaw();
+        Devices.navx.resetYaw();
         
-        robot.navx.setHeading(90);
+        Devices.navx.setHeading(90);
         
         // Reset encoder.
-        encoder.reset();
+        Devices.encoder.reset();
 
         // Motor safety turned on.
-        robot.robotDrive.setSafetyEnabled(true);
+        Devices.robotDrive.setSafetyEnabled(true);
         
 		// Driving loop runs until teleop is over.
 
@@ -169,12 +164,12 @@ class Teleop
 			
 			LCD.printLine(3, "distance=%.2f", robot.monitorDistanceThread.getRangeInches());
 			LCD.printLine(4, "leftY=%.4f  rightY=%.4f  utilX=%.4f", leftY, rightY, utilX);
-			LCD.printLine(5, "encoder=%d,  shootenc=%d", encoder.get(), shooter.tlEncoder.get());
+			LCD.printLine(5, "encoder=%d,  shootenc=%d", Devices.encoder.get(), Devices.shooterEncoder.get());
 			//LCD.printLine(5, "gyroAngle=%d, gyroRate=%d", (int) robot.gyro.getAngle(), (int) robot.gyro.getRate());
-			LCD.printLine(6, "yaw=%.2f, total=%.2f, rate=%.2f, hdng=%.2f", robot.navx.getYaw(), robot.navx.getTotalYaw(), 
-					robot.navx.getYawRate(), robot.navx.getHeading());
+			LCD.printLine(6, "yaw=%.2f, total=%.2f, rate=%.2f, hdng=%.2f", Devices.navx.getYaw(), Devices.navx.getTotalYaw(), 
+					Devices.navx.getYawRate(), Devices.navx.getHeading());
 			LCD.printLine(7, "shootenc=%d rpm=%.0f pwr=%.2f", shooter.shooterSpeedSource.get(), 
-					shooter.shooterSpeedSource.getRate() * 60, shooter.motor.get());
+					shooter.shooterSpeedSource.getRate() * 60, Devices.shooterMotor.get());
 			LCD.printLine(8, "pressureV=%.2f  psi=%d", robot.monitorCompressorThread.getVoltate(), robot.monitorCompressorThread.getPressure());
 			//SmartDashboard.putNumber("AirPressure", (int) robot.workingPressure.getVoltage() * 36);
 
@@ -202,13 +197,13 @@ class Teleop
 				{	// normal tank with straight drive assist when sticks within 10% of each other.
 					if (leftRightEqual(leftY, rightY, 10) && Math.abs(rightY) > .50)
 					{
-						if (!steeringAssistMode) robot.navx.resetYaw();
+						if (!steeringAssistMode) Devices.navx.resetYaw();
 
 						// Angle is negative if robot veering left, positive if veering right when going forward.
 						// It is opposite when going backward. Note that for this robot, - power means forward and
 						// + power means backward.
 						
-						angle = (int) robot.navx.getYaw();
+						angle = (int) Devices.navx.getYaw();
 
 						LCD.printLine(5, "angle=%d", angle);
 						
@@ -223,25 +218,25 @@ class Teleop
 						// right so we set the turn value to - because - is a turn left which corrects our right
 						// drift.
 						
-						robot.robotDrive.drive(rightY, -angle * gain);
+						Devices.robotDrive.drive(rightY, -angle * gain);
 
 						steeringAssistMode = true;
 					}
 					else
 					{
 						steeringAssistMode = false;
-						robot.robotDrive.tankDrive(leftY, rightY);		// Normal tank drive.
+						Devices.robotDrive.tankDrive(leftY, rightY);		// Normal tank drive.
 					}
 					
 				  SmartDashboard.putBoolean("Overload", steeringAssistMode);
 				}
 				else
-					robot.robotDrive.tankDrive(leftY, rightY);		// Normal tank drive.
+					Devices.robotDrive.tankDrive(leftY, rightY);		// Normal tank drive.
 			}
 			
 			// Update the robot heading indicator on the DS.
 			
-	   		SmartDashboard.putNumber("Gyro", robot.navx.getHeading());
+	   		SmartDashboard.putNumber("Gyro", Devices.navx.getHeading());
 
 			// End of driving loop.
 			
@@ -385,9 +380,9 @@ class Teleop
 				// Set CAN Talon brake mmode.
 	    		case ROCKER_LEFT_BACK:
     				if (control.latchedState)
-    					robot.SetCANTalonBrakeMode(false);	// coast
+    					Devices.SetCANTalonBrakeMode(false);	// coast
     				else
-    	    			robot.SetCANTalonBrakeMode(true);	// brake
+    					Devices.SetCANTalonBrakeMode(true);	// brake
     				
     				break;
     				
@@ -424,7 +419,7 @@ class Teleop
 				case TRIGGER:
 					//if (robot.cameraThread != null) robot.cameraThread.ChangeCamera();
 					altDriveMode = !altDriveMode;
-					robot.navx.resetYaw();	// for heading testing only. Remove at end of test.
+					Devices.navx.resetYaw();	// for heading testing only. Remove at end of test.
 					
 					break;
 					
