@@ -9,6 +9,12 @@ c:\users\yourusername\wpilib\user\java\lib. Download Robot10 and import into Ecl
 the lib directory and restart Eclipse. RobotLib will be integrated into your Robo10 project. After that, if
 RobotLib changes, just download the new RobotLib jars to the lib directory and refresh your Robot10 project.
 ****************************************************************************************************************
+Version 10.2 (experimental branch)
+
+*	Modify to move all device instance creation to global "Devices" class. This centralizes all device and port 
+	allocations in a single location and as such all device instances are created once and persist as long as 
+	the robot program runs.
+	
 Version 10.1
 
 *	Merge 2017 season development branch "rac" into master at end of season.
