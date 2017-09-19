@@ -30,7 +30,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC10D-09.13.17-01";
+  static final String  	PROGRAM_NAME = "RAC10D-09.14.17-01";
 
   public Properties		robotProperties;
   
@@ -160,7 +160,7 @@ public class Robot extends SampleRobot
    		monitorBatteryThread = MonitorBattery.getInstance(Devices.ds);
    		monitorBatteryThread.start();
 
-   		monitorCompressorThread = MonitorCompressor.getInstance(0);
+   		monitorCompressorThread = MonitorCompressor.getInstance(Devices.pressureSensor);
    		monitorCompressorThread.setDelay(1.0);
    		monitorCompressorThread.SetLowPressureAlarm(50);
    		monitorCompressorThread.start();
@@ -173,10 +173,10 @@ public class Robot extends SampleRobot
        	cameraThread = CameraFeed.getInstance(); 
        	cameraThread.start();
    		
-   		// Start thread to monitor distance sensor. Uses Analog port 1.
+   		// Start thread to monitor distance sensor.
    		
    		//monitorDistanceThread = MonitorDistanceMBX.getInstance(this);
-   		monitorDistanceThread = MonitorDistance.getInstance(this, 5);
+   		monitorDistanceThread = MonitorDistance.getInstance(this, Devices.distanceSensor);
    		monitorDistanceThread.start();
    		
    		Util.consoleLog("end");

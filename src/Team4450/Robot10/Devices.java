@@ -6,6 +6,7 @@ import com.ctre.CANTalon.TalonControlMode;
 import Team4450.Lib.NavX;
 import Team4450.Lib.Util;
 import Team4450.Lib.ValveDA;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -16,12 +17,14 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
+import edu.wpi.first.wpilibj.Ultrasonic;
 
 public class Devices
 {
 	  // Motor CAN ID/PWM port assignments (1=left-front, 2=left-rear, 3=right-front, 4=right-rear)
 	  private static CANTalon	LFCanTalon, LRCanTalon, RFCanTalon, RRCanTalon, LSlaveCanTalon, RSlaveCanTalon;
 	  //Talon					LFPwmTalon, LRPwmTalon, RFPwmTalon, RRPwmTalon;
+	  
 	  public static RobotDrive	robotDrive;
 
 	  public final static Joystick      utilityStick = new Joystick(2);	
@@ -31,6 +34,10 @@ public class Devices
 
 	  public final static Compressor	compressor = new Compressor(0);	// Compressor class represents the PCM. There are 2.
 	  public final static Compressor	compressor1 = new Compressor(1);
+	  
+	  public final static AnalogInput	pressureSensor = new AnalogInput(0);
+	  public final static Ultrasonic	distanceSensor = new Ultrasonic(5, 6);	// Digital I/O ports.
+	  
 	  public final static ValveDA		unusedValve = new ValveDA(1, 3);
 	  public final static ValveDA		pickupLiftValve = new ValveDA(6);
 	  public final static ValveDA		pickupDeployValve = new ValveDA(1, 0);
@@ -44,23 +51,24 @@ public class Devices
 
 	  public static NavX				navx;
 
-	  // Wheel encoder is plugged into dio port 1 - orange=+5v blue=signal, dio port 2 black=gnd yellow=signal. 
+	  // Wheel encoder is plugged into dio port 3 - orange=+5v blue=signal, dio port 4 black=gnd yellow=signal. 
 	  public final static Encoder		encoder = new Encoder(3, 4, true, EncodingType.k4X);
 
 	  // Encoder ribbon cable to dio ports: ribbon wire 2 = orange, 5 = yellow, 7 = blue, 10 = black
 	  // not used.
 	  
-	  public final static Talon			shooterMotor = new Talon(1);
-	  public final static Talon			feederMotor = new Talon(3), indexerMotor = new Talon(2);
-	  public final static CANTalon		gearMotor = new CANTalon(7);
-
 	  public final static Spark			ballMotor = new Spark(0);
+	  public final static Talon			shooterMotor = new Talon(1);
+	  public final static Talon			indexerMotor = new Talon(2);
+	  public final static Talon			feederMotor = new Talon(3);
+	  public final static CANTalon		gearMotor = new CANTalon(7);
 
 	  // Shooter Wheel quad encoder is plugged into dio port 3 - orange=+5v blue=signal, dio port 4 - black=gnd yellow=signal. 
 	  //public Encoder		shooterEncoder = new Encoder(3, 4, true, EncodingType.k4X);
 		
 	  // Touchless Encoder uses single channel on dio port 0.
 	  public final static Counter		shooterEncoder = new Counter(0);
+
 	  // Create RobotDrive object for CAN Talon controllers.
 	  
 	  public static void InitializeCANTalonDrive()
