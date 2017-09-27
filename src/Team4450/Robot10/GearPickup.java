@@ -38,10 +38,6 @@ public class GearPickup
 	public void dispose()
 	{
 		Util.consoleLog();
-		
-		//if (motor != null) motor.delete();
-		//if (pickupLiftValve != null) pickupLiftValve.dispose();
-		//if (pickupDeployValve != null) pickupDeployValve.dispose();
 	}
 	
 	public void startMotorIn()

@@ -26,10 +26,6 @@ public class GearBox
 	public void dispose()
 	{
 		Util.consoleLog();
-		
-//		if (highLowValve != null) highLowValve.dispose();
-//		if (ptoValve != null) ptoValve.dispose();
-//		if (neutralValve != null) neutralValve.dispose();
 	}
 	
 	private void displayStatus()

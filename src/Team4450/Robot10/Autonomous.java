@@ -17,9 +17,6 @@ public class Autonomous
 	private Shooter		shooter;
 	private BallPickup	ballPickup;
 	
-	//	encoder is plugged into dio port 1 - orange=+5v blue=signal, dio port 2 black=gnd yellow=signal. 
-	//private Encoder		encoder = new Encoder(3, 4, true, EncodingType.k4X);
-
 	Autonomous(Robot robot)
 	{
 		Util.consoleLog();
@@ -43,7 +40,6 @@ public class Autonomous
 	{
 		Util.consoleLog();
 		
-		//if (encoder != null) encoder.free();
 		if (gearBox != null) gearBox.dispose();
 		if (gearPickup != null) gearPickup.dispose();
 		if (shooter != null) shooter.dispose();

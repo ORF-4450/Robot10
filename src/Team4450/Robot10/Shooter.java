@@ -22,7 +22,6 @@ public class Shooter
 	public double					PVALUE, IVALUE, DVALUE; 
 
 	private final PIDController		shooterPidController;
-	//public ShooterSpeedSource		shooterSpeedSource = new ShooterSpeedSource(encoder);
 	public ShooterSpeedSource		shooterSpeedSource = new ShooterSpeedSource(Devices.shooterEncoder);
 
 	public Shooter(Robot robot)

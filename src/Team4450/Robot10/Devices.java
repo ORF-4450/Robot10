@@ -6,6 +6,7 @@ import com.ctre.CANTalon.TalonControlMode;
 import Team4450.Lib.NavX;
 import Team4450.Lib.Util;
 import Team4450.Lib.ValveDA;
+
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Counter;
@@ -150,7 +151,7 @@ public class Devices
 	  
 	  // Set CAN Talon voltage ramp rate. Rate is volts/sec and can be 2-12v.
 	  
-	  private static void SetCANTalonRampRate(double rate)
+	  public static void SetCANTalonRampRate(double rate)
 	  {
 		  Util.consoleLog("%f", rate);
 		  

@@ -11,7 +11,6 @@
 
 package Team4450.Robot10;
 
-import java.io.IOException;
 import java.util.Properties;
 
 import Team4450.Lib.*;
@@ -30,7 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC10D-09.14.17-01";
+  static final String  	PROGRAM_NAME = "RAC10D-09.27.17-01";
 
   public Properties		robotProperties;
   
@@ -47,7 +46,7 @@ public class Robot extends SampleRobot
       
   // Constructor.
   
-  public Robot() throws IOException
+  public Robot() //throws IOException
   {	
 	// Set up our custom logger.
 	 
@@ -55,7 +54,7 @@ public class Robot extends SampleRobot
 	{
 		Util.CustomLogger.setup();
     }
-    catch (Throwable e) {Util.logException(e);}
+    catch (Exception e) {Util.logException(e);}
       
     try
     {
@@ -63,7 +62,7 @@ public class Robot extends SampleRobot
 
     	Util.consoleLog("RobotLib=%s", LibraryVersion.version);
     }
-    catch (Throwable e) {Util.logException(e);}
+    catch (Exception e) {Util.logException(e);}
   }
     
   // Initialization, called at class start up.
@@ -181,7 +180,7 @@ public class Robot extends SampleRobot
    		
    		Util.consoleLog("end");
     }
-    catch (Throwable e) {Util.logException(e);}
+    catch (Exception e) {Util.logException(e);}
   }
   
   // Called when robot is disabled.
@@ -216,7 +215,7 @@ public class Robot extends SampleRobot
 		  
 		  Util.consoleLog("end");
 	  }
-	  catch (Throwable e) {Util.logException(e);}
+	  catch (Exception e) {Util.logException(e);}
   }
   
   // Called at the start of Autonomous period.
@@ -258,7 +257,7 @@ public class Robot extends SampleRobot
     	  SmartDashboard.putBoolean("Auto Mode", false);
     	  Util.consoleLog("end");
       }
-      catch (Throwable e) {Util.logException(e);}
+      catch (Exception e) {Util.logException(e);}
   }
 
   // Called at the start of the teleop period.
@@ -298,7 +297,7 @@ public class Robot extends SampleRobot
         	
           Util.consoleLog("end");
        }
-       catch (Throwable e) {Util.logException(e);} 
+       catch (Exception e) {Util.logException(e);} 
   }
     
   public void test() 
