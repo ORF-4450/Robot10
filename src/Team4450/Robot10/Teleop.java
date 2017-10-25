@@ -114,11 +114,11 @@ class Teleop
         // of the rocker switch.
         if (robot.isComp) Devices.SetCANTalonBrakeMode(lpControl.latchedState);
         
-        // Set gyro/Navx to heading 0.
+        // Set gyro/Navx heading tracking to 0.
         //robot.gyro.reset();
         Devices.navx.resetYaw();
-        
-        Devices.navx.setHeading(90);
+//        
+//        Devices.navx.setHeading(90);
         
         // Reset encoder.
         Devices.encoder.reset();

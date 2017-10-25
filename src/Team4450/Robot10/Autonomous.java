@@ -66,7 +66,9 @@ public class Autonomous
         // Set gyro/NavX to heading 0.
         //robot.gyro.reset();
 		Devices.navx.resetYaw();
-		
+        
+        Devices.navx.setHeading(0);
+
         // Wait to start motors so gyro will be zero before first movement.
         //Timer.delay(.50);
 
@@ -185,7 +187,7 @@ public class Autonomous
 		
 		if (!isAutoActive()) return;
 		
-		// Lef the camera image settle down.
+		// Let the camera image settle down.
 		
 		if (useVision) Timer.delay(.25);
 		
@@ -209,7 +211,7 @@ public class Autonomous
 	
 	private void autoShoot(boolean left)
 	{
-		double power = -.60;
+		double	power = -.60;
 		int		encoderCountsFwd = 5400, encoderCountsBack = 3700, angle = 31;
 		
 		Util.consoleLog("pwr=%.2f  encf=%d  encb=%d  angle=%d", power, encoderCountsFwd, encoderCountsBack, angle);

@@ -29,7 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC10D-09.27.17-01";
+  static final String  	PROGRAM_NAME = "RAC10D-10.25.17-01";
 
   public Properties		robotProperties;
   
@@ -91,7 +91,7 @@ public class Robot extends SampleRobot
    		
    		SmartDashboard.putBoolean("CompressorEnabled", Boolean.parseBoolean(robotProperties.getProperty("CompressorEnabledByDefault")));
 
-   		// Initialize PID data entry fields on the DS to thier default values.
+   		// Initialize PID data entry fields on the DS to their default values.
    		
 //   		SmartDashboard.putBoolean("PIDEnabled", false);
 //   		SmartDashboard.putNumber("PValue", 0);
@@ -100,7 +100,7 @@ public class Robot extends SampleRobot
 //   		SmartDashboard.putNumber("LowSetting", 0);
 //   		SmartDashboard.putNumber("HighSetting", 0);
 
-   		// Initialize PID data entry fields on the DS to thier default values.
+   		// Initialize PID data entry fields on the DS to their default values.
    		// We create an instance of Shooter class to get the default PID values set
    		// according to which robot is running this code.
    		

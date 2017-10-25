@@ -17,5 +17,7 @@
 	<classpathentry kind="var" path="talonsrx"/>
 	<classpathentry kind="var" path="navx"/>
 	<classpathentry kind="var" path="robotlib" sourcepath="/robotlib.sources"/>
+	<classpathentry kind="var" path="USERLIBS_DIR/navx_frc.jar"/>
+	<classpathentry kind="var" path="USERLIBS_DIR/TalonSRXLibJava.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
