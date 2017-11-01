@@ -117,8 +117,6 @@ class Teleop
         // Set gyro/Navx heading tracking to 0.
         //robot.gyro.reset();
         Devices.navx.resetYaw();
-//        
-//        Devices.navx.setHeading(90);
         
         // Reset encoder.
         Devices.encoder.reset();
@@ -268,8 +266,8 @@ class Teleop
 		return joystickValue;
 	}
 	
-	// Custom base logrithim.
-	// Returns logrithim base of the value.
+	// Custom base logarithm.
+	// Returns logarithm base of the value.
 	
 	private double baseLog(double base, double value)
 	{
@@ -277,7 +275,7 @@ class Teleop
 	}
 
 	// Map joystick y value of 0.0 to 1.0 to the motor working power range of approx 0.5 to 1.0 using
-	// logrithmic curve.
+	// Logarithmic curve.
 	
 	private double stickLogCorrection(double joystickValue)
 	{
