@@ -29,7 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC10D-11.01.17-01";
+  static final String  	PROGRAM_NAME = "RAC10D-11.15.17-01";
 
   public Properties		robotProperties;
   

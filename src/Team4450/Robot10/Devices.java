@@ -3,9 +3,7 @@ package Team4450.Robot10;
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.TalonControlMode;
 
-import Team4450.Lib.NavX;
-import Team4450.Lib.Util;
-import Team4450.Lib.ValveDA;
+import Team4450.Lib.*;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
@@ -68,8 +66,10 @@ public class Devices
 	  //public Encoder		shooterEncoder = new Encoder(3, 4, true, EncodingType.k4X);
 		
 	  // Touchless Encoder uses single channel on dio port 0.
-	  public final static Counter		shooterEncoder = new Counter(0);
+	  public final static Counter			shooterEncoder = new Counter(0);
 
+	  public final static AbsoluteEncoder	absEncoder = new AbsoluteEncoder(new AnalogInput(1), 192);
+	  
 	  // Create RobotDrive object for CAN Talon controllers.
 	  
 	  public static void InitializeCANTalonDrive()
