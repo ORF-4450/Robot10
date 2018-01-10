@@ -8,22 +8,12 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
-import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import Team4450.Lib.Util;
 
 public class Shooter
 {
 	private Robot		robot;
-	public Talon		motor = new Talon(1);
-	private Talon		feederMotor = new Talon(3), indexerMotor = new Talon(2);
-
-	// Shooter Wheel quad encoder is plugged into dio port 3 - orange=+5v blue=signal, dio port 4 - black=gnd yellow=signal. 
-	//public Encoder		encoder = new Encoder(3, 4, true, EncodingType.k4X);
-	
-	// Touchless Encoder single channel on dio port 0.
-	public Counter		tlEncoder = new Counter(0);
 
 	// Robot PID defaults. These look like static constants but you must instantiate
 	// this class to set up these items for comp or clone robot before accessing them.
@@ -32,8 +22,7 @@ public class Shooter
 	public double					PVALUE, IVALUE, DVALUE; 
 
 	private final PIDController		shooterPidController;
-	//public ShooterSpeedSource		shooterSpeedSource = new ShooterSpeedSource(encoder);
-	public ShooterSpeedSource		shooterSpeedSource = new ShooterSpeedSource(tlEncoder);
+	public ShooterSpeedSource		shooterSpeedSource = new ShooterSpeedSource(Devices.shooterEncoder);
 
 	public Shooter(Robot robot)
 	{
@@ -41,8 +30,7 @@ public class Shooter
 		
 		this.robot = robot;
 		
-		//encoder.reset();
-		tlEncoder.reset();
+		Devices.shooterEncoder.reset();
 		
 		// This is distance per pulse and our distance is 1 revolution since we want to measure
 		// rpm. We determined there are 1024 pulses in a rev so 1/1024 = .000976 rev per pulse.
@@ -50,14 +38,14 @@ public class Shooter
 		
 		// This is distance per pulse and our distance is 1 revolution since we want to measure
 		// rpm. We know the touchless encoder pulses once per revolution.
-		tlEncoder.setDistancePerPulse(1);
+		Devices.shooterEncoder.setDistancePerPulse(1);
 		
 		// Tells encoder to supply the rate as the input to any PID controller source.
 		//encoder.setPIDSourceType(PIDSourceType.kRate);
-		tlEncoder.setPIDSourceType(PIDSourceType.kRate);
+		Devices.shooterEncoder.setPIDSourceType(PIDSourceType.kRate);
 
 		// Create PIDController using our custom PIDSource and SpeedController classes.
-		shooterPidController = new PIDController(0.0, 0.0, 0.0, shooterSpeedSource, motor);
+		shooterPidController = new PIDController(0.0, 0.0, 0.0, shooterSpeedSource, Devices.shooterMotor);
 
 		// Handle the fact that the pickup motor is a CANTalon on competition robot
 		// and a pwm Talon on clone. Set PID defaults. Note that this sets the default
@@ -101,12 +89,6 @@ public class Shooter
 			shooterPidController.disable();
 			shooterPidController.free();
 		}
-		
-		if (motor != null) motor.free();
-		//if (encoder != null) encoder.free();
-		if (tlEncoder != null) tlEncoder.free();
-		if (feederMotor != null) feederMotor.free();
-		if (indexerMotor != null) indexerMotor.free();
 	}
 	
 //	public void start()
@@ -143,10 +125,10 @@ public class Shooter
     			holdShooterRPM(SmartDashboard.getNumber("HighSetting", SHOOTER_HIGH_RPM));
     		else
     			// Set power directly for any value other than the defined high and low values.
-    			motor.set(power);
+    			Devices.shooterMotor.set(power);
 		}
 		else
-			motor.set(power);
+			Devices.shooterMotor.set(power);
 			
 		SmartDashboard.putBoolean("ShooterMotor", true);
 	}
@@ -159,12 +141,12 @@ public class Shooter
 		
 		shooterPidController.disable();
 
-		motor.set(0);
+		Devices.shooterMotor.set(0);
 	}
 
 	public boolean isRunning()
 	{
-		if (motor.get() != 0)
+		if (Devices.shooterMotor.get() != 0)
 			return true;
 		else
 			return false;
@@ -176,8 +158,8 @@ public class Shooter
 
 		SmartDashboard.putBoolean("DispenserMotor", true);
 		
-		feederMotor.set(-.60);	// comp=.30
-		indexerMotor.set(-.80);	// comp=.50
+		Devices.feederMotor.set(-.60);	// comp=.30
+		Devices.indexerMotor.set(-.80);	// comp=.50
 	}
 	
 	public void startFeedingReverse()
@@ -186,7 +168,7 @@ public class Shooter
 
 		SmartDashboard.putBoolean("DispenserMotor", true);
 		
-		feederMotor.set(.20);
+		Devices.feederMotor.set(.20);
 	}
 
 	public void stopFeeding()
@@ -195,13 +177,13 @@ public class Shooter
 
 		SmartDashboard.putBoolean("DispenserMotor", false);
 
-		feederMotor.set(0);
-		indexerMotor.set(0);
+		Devices.feederMotor.set(0);
+		Devices.indexerMotor.set(0);
 	}
 
 	public boolean isFeeding()
 	{
-		if (feederMotor.get() != 0)
+		if (Devices.feederMotor.get() != 0)
 			return true;
 		else
 			return false;
@@ -231,7 +213,7 @@ public class Shooter
 		shooterPidController.setPercentTolerance(5);	// 5% error.
 		shooterPidController.setToleranceBuffer(4096);	// 4 seconds of averaging.
 		shooterPidController.setContinuous();
-		//shooterPidController.setOutputRange(.20, .90);
+		shooterPidController.setOutputRange(.20, .90);
 		shooterSpeedSource.reset();
 		shooterPidController.enable();
 	}

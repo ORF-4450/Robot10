@@ -11,9 +11,6 @@ public class GearBox
 {
 	private Robot		robot;
 	private boolean		lowSpeed, neutral, pto, highSpeed, neutralSupported = true;
-	private ValveDA		highLowValve = new ValveDA(0);
-	private ValveDA		ptoValve = new ValveDA(2);
-	private ValveDA		neutralValve = new ValveDA(4);
 	
 	public GearBox	(Robot robot)
 	{
@@ -29,10 +26,6 @@ public class GearBox
 	public void dispose()
 	{
 		Util.consoleLog();
-		
-		if (highLowValve != null) highLowValve.dispose();
-		if (ptoValve != null) ptoValve.dispose();
-		if (neutralValve != null) neutralValve.dispose();
 	}
 	
 	private void displayStatus()
@@ -55,9 +48,9 @@ public class GearBox
 		highSpeed = false;
 		neutral = false;
 
-		highLowValve.SetA();
+		Devices.highLowValve.SetA();
 
-		if (neutralSupported) neutralValve.Open();
+		if (neutralSupported) Devices.neutralValve.Open();
 		
 		lowSpeed = true;
 		
@@ -74,9 +67,9 @@ public class GearBox
 		neutral = false;
 		lowSpeed = false;
 		
-		if (neutralSupported) neutralValve.Close();
+		if (neutralSupported) Devices.neutralValve.Close();
 
-		highLowValve.SetB();
+		Devices.highLowValve.SetB();
 		
 		highSpeed = true;
 		
@@ -94,11 +87,11 @@ public class GearBox
 
 		if (neutralSupported)
 		{
-			neutralValve.Close();
+			Devices.neutralValve.Close();
 			
-			if (lowSpeed) highLowValve.SetB();
+			if (lowSpeed) Devices.highLowValve.SetB();
 
-			highLowValve.SetA();
+			Devices.highLowValve.SetA();
 			
 			neutral = true;
 			lowSpeed = false;
@@ -117,7 +110,7 @@ public class GearBox
 		
 		neutral();
 		
-		ptoValve.SetA();
+		Devices.ptoValve.SetA();
 
 		pto = true;
 		
@@ -133,7 +126,7 @@ public class GearBox
 
 		pto = false;
 		
-		ptoValve.SetB();
+		Devices.ptoValve.SetB();
 		
 		lowSpeed();
 		

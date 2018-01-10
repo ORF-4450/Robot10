@@ -2,24 +2,21 @@
 package Team4450.Robot10;
 
 import Team4450.Lib.*;
-import edu.wpi.first.wpilibj.Encoder;
+//import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.CounterBase.EncodingType;
+//import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Autonomous
 {
 	private final Robot	robot;
-	private final int	program = (int) SmartDashboard.getNumber("AutoProgramSelect");
+	private final int	program = (int) SmartDashboard.getNumber("AutoProgramSelect",0);
 	private GearPickup	gearPickup;
 	private GearBox		gearBox;
 	private Vision		vision;
 	private Shooter		shooter;
 	private BallPickup	ballPickup;
 	
-	//	encoder is plugged into dio port 1 - orange=+5v blue=signal, dio port 2 black=gnd yellow=signal. 
-	private Encoder		encoder = new Encoder(3, 4, true, EncodingType.k4X);
-
 	Autonomous(Robot robot)
 	{
 		Util.consoleLog();
@@ -43,7 +40,6 @@ public class Autonomous
 	{
 		Util.consoleLog();
 		
-		if (encoder != null) encoder.free();
 		if (gearBox != null) gearBox.dispose();
 		if (gearPickup != null) gearPickup.dispose();
 		if (shooter != null) shooter.dispose();
@@ -57,18 +53,22 @@ public class Autonomous
 
 	public void execute()
 	{
-		Util.consoleLog("Alliance=%s, Location=%d, Program=%d, FMS=%b", robot.alliance.name(), robot.location, program, robot.ds.isFMSAttached());
-		LCD.printLine(2, "Alliance=%s, Location=%d, FMS=%b, Program=%d", robot.alliance.name(), robot.location, robot.ds.isFMSAttached(), program);
+		Util.consoleLog("Alliance=%s, Location=%d, Program=%d, FMS=%b", robot.alliance.name(), robot.location, program, 
+				Devices.ds.isFMSAttached());
+		LCD.printLine(2, "Alliance=%s, Location=%d, FMS=%b, Program=%d", robot.alliance.name(), robot.location, 
+				Devices.ds.isFMSAttached(), program);
 
-		robot.robotDrive.setSafetyEnabled(false);
+		Devices.robotDrive.setSafetyEnabled(false);
 
 		// Initialize encoder.
-		encoder.reset();
+		Devices.encoder.reset();
         
         // Set gyro/NavX to heading 0.
         //robot.gyro.reset();
-		robot.navx.resetYaw();
-		
+		Devices.navx.resetYaw();
+        
+        Devices.navx.setHeading(0);
+
         // Wait to start motors so gyro will be zero before first movement.
         //Timer.delay(.50);
 
@@ -187,7 +187,7 @@ public class Autonomous
 		
 		if (!isAutoActive()) return;
 		
-		// Lef the camera image settle down.
+		// Let the camera image settle down.
 		
 		if (useVision) Timer.delay(.25);
 		
@@ -211,7 +211,7 @@ public class Autonomous
 	
 	private void autoShoot(boolean left)
 	{
-		double power = -.60;
+		double	power = -.60;
 		int		encoderCountsFwd = 5400, encoderCountsBack = 3700, angle = 31;
 		
 		Util.consoleLog("pwr=%.2f  encf=%d  encb=%d  angle=%d", power, encoderCountsFwd, encoderCountsBack, angle);
@@ -262,21 +262,21 @@ public class Autonomous
 		
 		Util.consoleLog("pwr=%.2f, count=%d, brakes=%b", power, encoderCounts, enableBrakes);
 
-		if (robot.isComp) robot.SetCANTalonBrakeMode(enableBrakes);
+		if (robot.isComp) Devices.SetCANTalonBrakeMode(enableBrakes);
 
-		encoder.reset();
-		robot.navx.resetYaw();
+		Devices.encoder.reset();
+		Devices.navx.resetYaw();
 		
-		while (isAutoActive() && Math.abs(encoder.get()) < encoderCounts) 
+		while (isAutoActive() && Math.abs(Devices.encoder.get()) < encoderCounts) 
 		{
-			LCD.printLine(4, "encoder=%d", encoder.get());
+			LCD.printLine(4, "encoder=%d", Devices.encoder.get());
 			
 			// Angle is negative if robot veering left, positive if veering right when going forward.
 			// It is opposite when going backward. Note that for this robot, - power means forward and
 			// + power means backward.
 			
 			//angle = (int) robot.gyro.getAngle();
-			angle = (int) robot.navx.getYaw();
+			angle = (int) Devices.navx.getYaw();
 
 			LCD.printLine(5, "angle=%d", angle);
 			
@@ -291,14 +291,14 @@ public class Autonomous
 			// right so we set the turn value to - because - is a turn left which corrects our right
 			// drift.
 			
-			robot.robotDrive.drive(power, -angle * gain);
+			Devices.robotDrive.curvatureDrive(power, -angle * gain, true);
 			
 			Timer.delay(.020);
 		}
 
-		robot.robotDrive.tankDrive(0, 0, true);				
+		Devices.robotDrive.tankDrive(0, 0, true);				
 		
-		Util.consoleLog("end: actual count=%d", Math.abs(encoder.get()));
+		Util.consoleLog("end: actual count=%d", Math.abs(Devices.encoder.get()));
 	}
 	
 	// Auto rotate left or right the specified angle. Left/right from robots forward view.
@@ -310,13 +310,13 @@ public class Autonomous
 	{
 		Util.consoleLog("pwr=%.2f  angle=%d", power, angle);
 		
-		robot.navx.resetYaw();
+		Devices.navx.resetYaw();
 		
-		robot.robotDrive.tankDrive(power, -power);
+		Devices.robotDrive.tankDrive(power, -power);
 
-		while (isAutoActive() && Math.abs((int) robot.navx.getYaw()) < angle) {Timer.delay(.020);} 
+		while (isAutoActive() && Math.abs((int) Devices.navx.getYaw()) < angle) {Timer.delay(.020);} 
 		
-		robot.robotDrive.tankDrive(0, 0);
+		Devices.robotDrive.tankDrive(0, 0);
 	}
 	
 	// Auto drive in current direction and power for specified encoder count. Stops
@@ -333,15 +333,15 @@ public class Autonomous
 		
 		Util.consoleLog("pwr=%.2f, count=%d, brakes=%b", power, encoderCounts, enableBrakes);
 
-		if (robot.isComp) robot.SetCANTalonBrakeMode(enableBrakes);
+		if (robot.isComp) Devices.SetCANTalonBrakeMode(enableBrakes);
 
-		encoder.reset();
+		Devices.encoder.reset();
 		
 		robot.monitorDistanceThread.setDelay(delay);
 		
 		while (driving) 
 		{
-			LCD.printLine(4, "encoder=%d", encoder.get());
+			LCD.printLine(4, "encoder=%d", Devices.encoder.get());
 			
 			// pegOffset is negative if robot veering right, positive if veering left when going forward.
 			// It is opposite when going backward. Note that for this robot, - power means forward and
@@ -383,11 +383,11 @@ public class Autonomous
 			}
 			else
 			{
-				driving = isAutoActive() && Math.abs(encoder.get()) < encoderCounts;
+				driving = isAutoActive() && Math.abs(Devices.encoder.get()) < encoderCounts;
 				
 				if (!driving) 
 				{
-					Util.consoleLog("stop driving, encoder=%d", Math.abs(encoder.get()));
+					Util.consoleLog("stop driving, encoder=%d", Math.abs(Devices.encoder.get()));
 					continue;
 				}
 			}
@@ -435,12 +435,12 @@ public class Autonomous
 			// Offset is + if robot veering right, so we invert to - because - curve is to the left.
 			// Offset is - if robot veering left, so we invert to + because + curve is to the right.
 			
-			robot.robotDrive.drive(power2, -pegOffset);
+			Devices.robotDrive.curvatureDrive(power2, -pegOffset, true);
 			
 			Timer.delay(delay);
 		}	// end of while (driving).
 
-		robot.robotDrive.tankDrive(0, 0, true);				
+		Devices.robotDrive.tankDrive(0, 0, true);				
 		
 		robot.monitorDistanceThread.setDelay(1.0);
 	}

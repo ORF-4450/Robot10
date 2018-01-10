@@ -1,26 +1,23 @@
-// 2017 competition robot code.
-// For Robot "Enterprise" built for FRC game "First STEAMWorks".
+/**
+ * 2017 competition robot code.
+ *
+ * For Robot "Enterprise" built for FRC game "First STEAMWorks".
+ * 
+ * This version has all physical devices defined in a new static class
+ * called Devices. This puts all the devices and thier port assignments
+ * in one place. This means devices get created as they are accessed and
+ * continue to exist until the code is stopped.
+*/
 
 package Team4450.Robot10;
 
-import java.io.IOException;
 import java.util.Properties;
 
 import Team4450.Lib.*;
-//import edu.wpi.first.wpilibj.AnalogInput;
-//import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
-//import edu.wpi.first.wpilibj.Talon;
-
-import com.ctre.*;
-import com.ctre.CANTalon.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -31,31 +28,11 @@ import com.ctre.CANTalon.*;
 
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC10-06.01.17-01";
+  static final String  	PROGRAM_NAME = "SWF10DU-1.9.18-01";
 
-  // Motor CAN ID/PWM port assignments (1=left-front, 2=left-rear, 3=right-front, 4=right-rear)
-  CANTalon				LFCanTalon, LRCanTalon, RFCanTalon, RRCanTalon, LSlaveCanTalon, RSlaveCanTalon;
-  //Talon					LFPwmTalon, LRPwmTalon, RFPwmTalon, RRPwmTalon;
-  RobotDrive      		robotDrive;
-  
-  final Joystick        utilityStick = new Joystick(2);	// 0 old ds configuration
-  final Joystick        leftStick = new Joystick(0);	// 1
-  final Joystick        rightStick = new Joystick(1);	// 2
-  final Joystick		launchPad = new Joystick(3);
-  
-  final Compressor		compressor = new Compressor(0);	// Compressor class represents the PCM. There are 2.
-  final Compressor		compressor1 = new Compressor(1);
-  private ValveDA		unusedValve = new ValveDA(1, 3);
-
-  //final AnalogGyro		gyro = new AnalogGyro(0);		// gyro must be plugged into analog port 0 or 1.
-  
   public Properties		robotProperties;
   
   public boolean		isClone = false, isComp = false;
-  
-  PowerDistributionPanel PDP = new PowerDistributionPanel();
-
-  DriverStation         ds = null;
     	
   DriverStation.Alliance	alliance;
   int                       location;
@@ -65,12 +42,10 @@ public class Robot extends SampleRobot
   MonitorCompressor		monitorCompressorThread;
   MonitorDistance		monitorDistanceThread;
   CameraFeed			cameraThread;
-  
-  NavX					navx;
-    
+      
   // Constructor.
   
-  public Robot() throws IOException
+  public Robot() //throws IOException
   {	
 	// Set up our custom logger.
 	 
@@ -78,17 +53,15 @@ public class Robot extends SampleRobot
 	{
 		Util.CustomLogger.setup();
     }
-    catch (Throwable e) {Util.logException(e);}
+    catch (Exception e) {Util.logException(e);}
       
     try
     {
     	Util.consoleLog(PROGRAM_NAME);
 
     	Util.consoleLog("RobotLib=%s", LibraryVersion.version);
-    	
-        ds = DriverStation.getInstance();
     }
-    catch (Throwable e) {Util.logException(e);}
+    catch (Exception e) {Util.logException(e);}
   }
     
   // Initialization, called at class start up.
@@ -117,7 +90,7 @@ public class Robot extends SampleRobot
    		
    		SmartDashboard.putBoolean("CompressorEnabled", Boolean.parseBoolean(robotProperties.getProperty("CompressorEnabledByDefault")));
 
-   		// Initialize PID data entry fields on the DS to thier default values.
+   		// Initialize PID data entry fields on the DS to their default values.
    		
 //   		SmartDashboard.putBoolean("PIDEnabled", false);
 //   		SmartDashboard.putNumber("PValue", 0);
@@ -126,7 +99,7 @@ public class Robot extends SampleRobot
 //   		SmartDashboard.putNumber("LowSetting", 0);
 //   		SmartDashboard.putNumber("HighSetting", 0);
 
-   		// Initialize PID data entry fields on the DS to thier default values.
+   		// Initialize PID data entry fields on the DS to their default values.
    		// We create an instance of Shooter class to get the default PID values set
    		// according to which robot is running this code.
    		
@@ -143,49 +116,40 @@ public class Robot extends SampleRobot
    		
    		// Reset PDB & PCM sticky faults.
       
-   		PDP.clearStickyFaults();
-   		compressor.clearAllPCMStickyFaults();
-   		compressor1.clearAllPCMStickyFaults();
+   		Devices.PDP.clearStickyFaults();
+   		Devices.compressor.clearAllPCMStickyFaults();
+   		Devices.compressor1.clearAllPCMStickyFaults();
    		
    		// Seat unused valve.
-   		unusedValve.SetA();
+   		Devices.unusedValve.SetA();
 
    		// Configure motor controllers and RobotDrive.
    		
-		InitializeCANTalonDrive();
+   		Devices.InitializeCANTalonDrive();
 		
-        robotDrive.stopMotor();
-        robotDrive.setSafetyEnabled(false);
-        robotDrive.setExpiration(0.1);
-        
-        // Reverse motors so they all turn on the right direction to match "forward"
-        // as we define it for the robot.
-
-        robotDrive.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, true);
-        robotDrive.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
-    
-        robotDrive.setInvertedMotor(RobotDrive.MotorType.kFrontRight, true);
-        robotDrive.setInvertedMotor(RobotDrive.MotorType.kRearRight, true);
-     
+   		Devices.robotDrive.stopMotor();
+   		Devices.robotDrive.setSafetyEnabled(false);
+   		Devices.robotDrive.setExpiration(0.1);
+             
         // calibrate the gyro if used. Takes several seconds.
         
-//        gyro.initGyro();
-//        gyro.setSensitivity(.007);	// Analog Devices model ADSR-S652.
-//        gyro.calibrate();
+//        Devices.gyro.initGyro();
+//        Devices.gyro.setSensitivity(.007);	// Analog Devices model ADSR-S652.
+//        Devices.gyro.calibrate();
    		
    		// Create NavX object here so it has time to calibrate before we
    		// use it. Takes 10 seconds. Must appear before CamerFeed is created.
    		
-   		navx = NavX.getInstance(NavX.PortType.SPI);
+   		Devices.navx = NavX.getInstance(NavX.PortType.SPI);
    		
-   		navx.dumpValuesToNetworkTables();
+   		Devices.navx.dumpValuesToNetworkTables();
 
    		// Start the battery, compressor, PDP and camera feed monitoring Tasks.
 
-   		monitorBatteryThread = MonitorBattery.getInstance(ds);
+   		monitorBatteryThread = MonitorBattery.getInstance();
    		monitorBatteryThread.start();
 
-   		monitorCompressorThread = MonitorCompressor.getInstance(0);
+   		monitorCompressorThread = MonitorCompressor.getInstance(Devices.pressureSensor);
    		monitorCompressorThread.setDelay(1.0);
    		monitorCompressorThread.SetLowPressureAlarm(50);
    		monitorCompressorThread.start();
@@ -198,15 +162,15 @@ public class Robot extends SampleRobot
        	cameraThread = CameraFeed.getInstance(); 
        	cameraThread.start();
    		
-   		// Start thread to monitor distance sensor. Uses Analog port 1.
+   		// Start thread to monitor distance sensor.
    		
    		//monitorDistanceThread = MonitorDistanceMBX.getInstance(this);
-   		monitorDistanceThread = MonitorDistance.getInstance(this, 5);
+   		monitorDistanceThread = MonitorDistance.getInstance(this, Devices.distanceSensor);
    		monitorDistanceThread.start();
    		
    		Util.consoleLog("end");
     }
-    catch (Throwable e) {Util.logException(e);}
+    catch (Exception e) {Util.logException(e);}
   }
   
   // Called when robot is disabled.
@@ -225,7 +189,7 @@ public class Robot extends SampleRobot
 		  SmartDashboard.putBoolean("Auto Mode", false);
 		  SmartDashboard.putBoolean("Teleop Mode", false);
 		  SmartDashboard.putBoolean("PTO", false);
-		  SmartDashboard.putBoolean("FMS", ds.isFMSAttached());
+		  SmartDashboard.putBoolean("FMS", Devices.ds.isFMSAttached());
 		  SmartDashboard.putBoolean("AutoTarget", false);
 		  SmartDashboard.putBoolean("TargetLocked", false);
 		  SmartDashboard.putBoolean("BallPickupMotor", false);
@@ -241,7 +205,7 @@ public class Robot extends SampleRobot
 		  
 		  Util.consoleLog("end");
 	  }
-	  catch (Throwable e) {Util.logException(e);}
+	  catch (Exception e) {Util.logException(e);}
   }
   
   // Called at the start of Autonomous period.
@@ -261,16 +225,16 @@ public class Robot extends SampleRobot
     	  // Make available the alliance (red/blue) and staring position as
     	  // set on the driver station or FMS.
         
-    	  alliance = ds.getAlliance();
-    	  location = ds.getLocation();
+    	  alliance = Devices.ds.getAlliance();
+    	  location = Devices.ds.getLocation();
 
     	  // This code turns off the automatic compressor management if requested by DS.
-    	  compressor.setClosedLoopControl(SmartDashboard.getBoolean("CompressorEnabled", true));
+    	  Devices.compressor.setClosedLoopControl(SmartDashboard.getBoolean("CompressorEnabled", true));
 
     	  // Reset persistent fault flags in control system modules.
-    	  PDP.clearStickyFaults();
-    	  compressor.clearAllPCMStickyFaults();
-    	  compressor1.clearAllPCMStickyFaults();
+    	  Devices.PDP.clearStickyFaults();
+    	  Devices.compressor.clearAllPCMStickyFaults();
+    	  Devices.compressor1.clearAllPCMStickyFaults();
              
     	  // Start autonomous process contained in the Autonomous class.
         
@@ -283,7 +247,7 @@ public class Robot extends SampleRobot
     	  SmartDashboard.putBoolean("Auto Mode", false);
     	  Util.consoleLog("end");
       }
-      catch (Throwable e) {Util.logException(e);}
+      catch (Exception e) {Util.logException(e);}
   }
 
   // Called at the start of the teleop period.
@@ -300,18 +264,18 @@ public class Robot extends SampleRobot
       	  SmartDashboard.putBoolean("Disabled", false);
       	  SmartDashboard.putBoolean("Teleop Mode", true);
         
-      	  alliance = ds.getAlliance();
-      	  location = ds.getLocation();
+      	  alliance = Devices.ds.getAlliance();
+      	  location = Devices.ds.getLocation();
         
-          Util.consoleLog("Alliance=%s, Location=%d, FMS=%b", alliance.name(), location, ds.isFMSAttached());
+          Util.consoleLog("Alliance=%s, Location=%d, FMS=%b", alliance.name(), location, Devices.ds.isFMSAttached());
 
     	  // Reset persistent fault flags in control system modules.
-          PDP.clearStickyFaults();
-          compressor.clearAllPCMStickyFaults();
-       	  compressor1.clearAllPCMStickyFaults();
+          Devices.PDP.clearStickyFaults();
+          Devices.compressor.clearAllPCMStickyFaults();
+          Devices.compressor1.clearAllPCMStickyFaults();
 
           // This code turns off the automatic compressor management if requested by DS.
-          compressor.setClosedLoopControl(SmartDashboard.getBoolean("CompressorEnabled", true));
+          Devices.compressor.setClosedLoopControl(SmartDashboard.getBoolean("CompressorEnabled", true));
         
           // Start operator control process contained in the Teleop class.
         
@@ -323,7 +287,7 @@ public class Robot extends SampleRobot
         	
           Util.consoleLog("end");
        }
-       catch (Throwable e) {Util.logException(e);} 
+       catch (Exception e) {Util.logException(e);} 
   }
     
   public void test() 
@@ -337,111 +301,5 @@ public class Robot extends SampleRobot
 	  Util.consoleLog("%s:%d", cameraName, device);
 
       CameraServer.getInstance().startAutomaticCapture(cameraName, device);
-  }
-
-  // Create RobotDrive object for CAN Talon controllers.
-  
-  private void InitializeCANTalonDrive()
-  {
-	  Util.consoleLog();
-
-	  LFCanTalon = new CANTalon(1);
-	  LRCanTalon = new CANTalon(2);
-	  RFCanTalon = new CANTalon(3);
-	  RRCanTalon = new CANTalon(4);
-	  LSlaveCanTalon = new CANTalon(5);
-	  RSlaveCanTalon = new CANTalon(6);
-	  
-	  robotDrive = new RobotDrive(LFCanTalon, LRCanTalon, RFCanTalon, RRCanTalon);
-
-      // Initialize CAN Talons and write status to log so we can verify
-      // all the talons are connected.
-      InitializeCANTalon(LFCanTalon);
-      InitializeCANTalon(LRCanTalon);
-      InitializeCANTalon(RFCanTalon);
-      InitializeCANTalon(RRCanTalon);
-      InitializeCANTalon(LSlaveCanTalon);
-      InitializeCANTalon(RSlaveCanTalon);
-      
-      // Configure slave CAN Talons to follow the front L & R Talons.
-      LSlaveCanTalon.changeControlMode(TalonControlMode.Follower);
-      LSlaveCanTalon.set(LFCanTalon.getDeviceID());
-      LSlaveCanTalon.reverseOutput(true);
-
-      RSlaveCanTalon.changeControlMode(TalonControlMode.Follower);
-      RSlaveCanTalon.set(RFCanTalon.getDeviceID());
-      RSlaveCanTalon.reverseOutput(true);
-      
-      // Turn on brake mode for CAN Talons.
-      SetCANTalonBrakeMode(true);
-  }
-
-  // Create RobotDrive object for PWM controllers.
-  
-//  private void InitializePWMTalonDrive()
-//  {
-//	  Util.consoleLog();
-//
-//	  LFPwmTalon = new Talon(3);
-//	  LRPwmTalon = new Talon(4);
-//	  RFPwmTalon = new Talon(5);
-//	  RRPwmTalon = new Talon(6);
-//	 
-//	  robotDrive = new RobotDrive(LFPwmTalon, LRPwmTalon, RFPwmTalon, RRPwmTalon);
-//	  
-//	  Util.consoleLog("end");
-//  }
-  
-  // Initialize and Log status indication from CANTalon. If we see an exception
-  // or a talon has low voltage value, it did not get recognized by the RR on start up.
-  
-  public void InitializeCANTalon(CANTalon talon)
-  {
-	  Util.consoleLog("talon init: %s   voltage=%.1f", talon.getDescription(), talon.getBusVoltage());
-
-	  talon.clearStickyFaults();
-	  talon.enableControl();
-	  talon.changeControlMode(TalonControlMode.PercentVbus);
-  }
-  
-  // Set neutral behavior of CAN Talons. True = brake mode, false = coast mode.
-
-  public void SetCANTalonBrakeMode(boolean brakeMode)
-  {
-	  Util.consoleLog("brakes on=%b", brakeMode);
-	  
-	  LFCanTalon.enableBrakeMode(brakeMode);
-	  LRCanTalon.enableBrakeMode(brakeMode);
-	  RFCanTalon.enableBrakeMode(brakeMode);
-	  RRCanTalon.enableBrakeMode(brakeMode);
-	  LSlaveCanTalon.enableBrakeMode(brakeMode);
-	  RSlaveCanTalon.enableBrakeMode(brakeMode);
-  }
-  
-  // Set CAN Talon voltage ramp rate. Rate is volts/sec and can be 2-12v.
-  
-  public void SetCANTalonRampRate(double rate)
-  {
-	  Util.consoleLog("%f", rate);
-	  
-	  LFCanTalon.setVoltageRampRate(rate);
-	  LRCanTalon.setVoltageRampRate(rate);
-	  RFCanTalon.setVoltageRampRate(rate);
-	  RRCanTalon.setVoltageRampRate(rate);
-	  LSlaveCanTalon.setVoltageRampRate(rate);
-	  RSlaveCanTalon.setVoltageRampRate(rate);
-  }
-  
-  // Return voltage and current draw for each CAN Talon.
-  
-  public String GetCANTalonStatus()
-  {
-	  return String.format("%.1f/%.1f  %.1f/%.1f  %.1f/%.1f  %.1f/%.1f  %.1f/%.1f  %.1f/%.1f", 
-			  LFCanTalon.getOutputVoltage(), LFCanTalon.getOutputCurrent(),
-			  LRCanTalon.getOutputVoltage(), LRCanTalon.getOutputCurrent(),
-			  RFCanTalon.getOutputVoltage(), RFCanTalon.getOutputCurrent(),
-			  RRCanTalon.getOutputVoltage(), RRCanTalon.getOutputCurrent(),
-			  LSlaveCanTalon.getOutputVoltage(), LSlaveCanTalon.getOutputCurrent(),
-			  RSlaveCanTalon.getOutputVoltage(), RSlaveCanTalon.getOutputCurrent());
   }
 }
