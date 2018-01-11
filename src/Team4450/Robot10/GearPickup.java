@@ -3,7 +3,8 @@
  */
 package Team4450.Robot10;
 
-import com.ctre.CANTalon;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.*;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import Team4450.Lib.LCD;
@@ -24,9 +25,9 @@ public class GearPickup
 		this.robot = robot;
 		this.teleop = teleop;
 
-		Devices.InitializeCANTalon((CANTalon) Devices.gearMotor);
+		Devices.InitializeCANTalon((WPI_TalonSRX) Devices.gearMotor);
 
-		Devices.gearMotor.enableBrakeMode(true);
+		Devices.gearMotor.setNeutralMode(NeutralMode.Brake);
 		
 		stopMotor();
 		

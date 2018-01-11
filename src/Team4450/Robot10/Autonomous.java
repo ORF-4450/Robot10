@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Autonomous
 {
 	private final Robot	robot;
-	private final int	program = (int) SmartDashboard.getNumber("AutoProgramSelect");
+	private final int	program = (int) SmartDashboard.getNumber("AutoProgramSelect", 0);
 	private GearPickup	gearPickup;
 	private GearBox		gearBox;
 	private Vision		vision;
@@ -291,7 +291,7 @@ public class Autonomous
 			// right so we set the turn value to - because - is a turn left which corrects our right
 			// drift.
 			
-			Devices.robotDrive.drive(power, -angle * gain);
+			Devices.robotDrive.curvatureDrive(power, -angle * gain, false);
 			
 			Timer.delay(.020);
 		}
@@ -435,7 +435,7 @@ public class Autonomous
 			// Offset is + if robot veering right, so we invert to - because - curve is to the left.
 			// Offset is - if robot veering left, so we invert to + because + curve is to the right.
 			
-			Devices.robotDrive.drive(power2, -pegOffset);
+			Devices.robotDrive.curvatureDrive(power2, -pegOffset, false);
 			
 			Timer.delay(delay);
 		}	// end of while (driving).
