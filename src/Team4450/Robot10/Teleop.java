@@ -162,11 +162,12 @@ class Teleop
 			//LCD.printLine(5, "gyroAngle=%d, gyroRate=%d", (int) robot.gyro.getAngle(), (int) robot.gyro.getRate());
 			LCD.printLine(6, "yaw=%.2f, total=%.2f, rate=%.2f, hdng=%.2f", Devices.navx.getYaw(), Devices.navx.getTotalYaw(), 
 					Devices.navx.getYawRate(), Devices.navx.getHeading());
-			LCD.printLine(7, "shootenc=%d rpm=%.0f pwr=%.2f", shooter.shooterSpeedSource.get(), 
-					shooter.shooterSpeedSource.getRate() * 60, Devices.shooterMotor.get());
+			LCD.printLine(7, "shootenc=%d rpm=%.0f rps=%.2f pwr=%.2f", shooter.shooterSpeedSource.get(), 
+					shooter.shooterSpeedSource.getRate() * 60, shooter.shooterSpeedSource.getRate(),
+					Devices.shooterMotor.get());
 			LCD.printLine(8, "pressureV=%.2f  psi=%d", robot.monitorCompressorThread.getVoltage(), robot.monitorCompressorThread.getPressure());
 			//SmartDashboard.putNumber("AirPressure", (int) robot.workingPressure.getVoltage() * 36);
-			LCD.printLine(9, "abs encoder=%f", Devices.absEncoder.pidGet());
+			//LCD.printLine(9, "abs encoder=%f", Devices.absEncoder.pidGet());
 
 			// Set wheel motors.
 			// Do not feed JS input to robotDrive if we are controlling the motors in automatic functions.

@@ -28,14 +28,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "SWF10DU-1.9.18-01";
+  static final String  	PROGRAM_NAME = "RAC10D-01.13.18-01";
 
   public Properties		robotProperties;
   
   public boolean		isClone = false, isComp = false;
     	
   DriverStation.Alliance	alliance;
-  int                       location;
+  int                       location, matchNumber;
+  String					eventName, gameMessage;
     
   Thread               	monitorBatteryThread, monitorPDPThread;
   //MonitorDistanceMBX	monitorDistanceThread;
@@ -130,7 +131,7 @@ public class Robot extends SampleRobot
    		Devices.robotDrive.stopMotor();
    		Devices.robotDrive.setSafetyEnabled(false);
    		Devices.robotDrive.setExpiration(0.1);
-             
+
         // calibrate the gyro if used. Takes several seconds.
         
 //        Devices.gyro.initGyro();
@@ -227,6 +228,10 @@ public class Robot extends SampleRobot
         
     	  alliance = Devices.ds.getAlliance();
     	  location = Devices.ds.getLocation();
+    	  eventName = Devices.ds.getEventName();
+    	  matchNumber = Devices.ds.getMatchNumber();
+    	  gameMessage = Devices.ds.getGameSpecificMessage();
+
 
     	  // This code turns off the automatic compressor management if requested by DS.
     	  Devices.compressor.setClosedLoopControl(SmartDashboard.getBoolean("CompressorEnabled", true));
@@ -266,8 +271,13 @@ public class Robot extends SampleRobot
         
       	  alliance = Devices.ds.getAlliance();
       	  location = Devices.ds.getLocation();
+    	  eventName = Devices.ds.getEventName();
+    	  matchNumber = Devices.ds.getMatchNumber();
+    	  gameMessage = Devices.ds.getGameSpecificMessage();
         
-          Util.consoleLog("Alliance=%s, Location=%d, FMS=%b", alliance.name(), location, Devices.ds.isFMSAttached());
+          Util.consoleLog("Alliance=%s, Location=%d, FMS=%b event=%s match=%d msg=%s", 
+        		  		   alliance.name(), location, Devices.ds.isFMSAttached(), eventName, matchNumber, 
+        		  		   gameMessage);
 
     	  // Reset persistent fault flags in control system modules.
           Devices.PDP.clearStickyFaults();

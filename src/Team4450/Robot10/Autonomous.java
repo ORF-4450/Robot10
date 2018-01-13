@@ -10,7 +10,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Autonomous
 {
 	private final Robot	robot;
-	private final int	program = (int) SmartDashboard.getNumber("AutoProgramSelect",0);
+
+	private final int	program = (int) SmartDashboard.getNumber("AutoProgramSelect", 0);
 	private GearPickup	gearPickup;
 	private GearBox		gearBox;
 	private Vision		vision;
@@ -53,10 +54,10 @@ public class Autonomous
 
 	public void execute()
 	{
-		Util.consoleLog("Alliance=%s, Location=%d, Program=%d, FMS=%b", robot.alliance.name(), robot.location, program, 
-				Devices.ds.isFMSAttached());
-		LCD.printLine(2, "Alliance=%s, Location=%d, FMS=%b, Program=%d", robot.alliance.name(), robot.location, 
-				Devices.ds.isFMSAttached(), program);
+		Util.consoleLog("Alliance=%s, Location=%d, Program=%d, FMS=%b, msg=%s", robot.alliance.name(), robot.location, program, 
+				Devices.ds.isFMSAttached(), robot.gameMessage);
+		LCD.printLine(2, "Alliance=%s, Location=%d, FMS=%b, Program=%d, msg=%s", robot.alliance.name(), robot.location, 
+				Devices.ds.isFMSAttached(), program, robot.gameMessage);
 
 		Devices.robotDrive.setSafetyEnabled(false);
 
@@ -291,7 +292,7 @@ public class Autonomous
 			// right so we set the turn value to - because - is a turn left which corrects our right
 			// drift.
 			
-			Devices.robotDrive.curvatureDrive(power, -angle * gain, true);
+			Devices.robotDrive.curvatureDrive(power, -angle * gain, false);
 			
 			Timer.delay(.020);
 		}
@@ -435,7 +436,7 @@ public class Autonomous
 			// Offset is + if robot veering right, so we invert to - because - curve is to the left.
 			// Offset is - if robot veering left, so we invert to + because + curve is to the right.
 			
-			Devices.robotDrive.curvatureDrive(power2, -pegOffset, true);
+			Devices.robotDrive.curvatureDrive(power2, -pegOffset, false);
 			
 			Timer.delay(delay);
 		}	// end of while (driving).

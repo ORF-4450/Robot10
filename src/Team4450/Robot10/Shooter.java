@@ -34,6 +34,7 @@ public class Shooter
 		
 		// This is distance per pulse and our distance is 1 revolution since we want to measure
 		// rpm. We determined there are 1024 pulses in a rev so 1/1024 = .000976 rev per pulse.
+		// This is for a regular encoder.
 		//encoder.setDistancePerPulse(.000976);
 		
 		// This is distance per pulse and our distance is 1 revolution since we want to measure
@@ -211,9 +212,12 @@ public class Shooter
 		shooterPidController.setPID(pValue, iValue, dValue, 0.0); 
 		shooterPidController.setSetpoint(rpm / 60);		// setpoint is revolutions per second.
 		shooterPidController.setPercentTolerance(5);	// 5% error.
-		shooterPidController.setToleranceBuffer(4096);	// 4 seconds of averaging.
-		shooterPidController.setContinuous();
-		shooterPidController.setOutputRange(.20, .90);
+
+		// Next 2 lines removed because they caused the pid controller to not work right
+		// after 2018 update.
+		//shooterPidController.setToleranceBuffer(4096);	// 4 seconds of averaging.
+		//shooterPidController.setContinuous();
+
 		shooterSpeedSource.reset();
 		shooterPidController.enable();
 	}
@@ -263,12 +267,18 @@ public class Shooter
 
 		public int get()
 		{
+			//if (counter != null ) Util.consoleLog("counter=%d", counter.get() * inversion);
+
 			if (encoder != null ) return encoder.get() * inversion;
 			if (counter != null ) return counter.get() * inversion;
 			
 			return 0;
 		}
 		
+		/**
+		 * Return the current rotational rate of the encoder or current value (count) to PID controller.
+		 * @return Rate Revolutions per second or current counts per second.
+		 */
 		public double getRate()
 		{
 			// TODO: Some sort of smoothing could be done to damp out the
@@ -281,6 +291,8 @@ public class Shooter
 //			
 //			return rpmAccumulator / rpmSampleCount;
 
+			//if (counter != null ) Util.consoleLog("counter=%f", counter.getRate() * inversion);
+
 			if (encoder != null) return encoder.getRate() * inversion;
 			if (counter != null) return counter.getRate() * inversion;
 			
@@ -288,12 +300,14 @@ public class Shooter
 		}
 		
 		/**
-		 * Return the current rotational rate of the encoder or current value (count) to PID controllers.
+		 * Return the current rotational rate of the encoder or current value (count) to PID controller.
 		 * @return Encoder revolutions per second or current count.
 		 */
 		@Override
 		public double pidGet()
 		{
+			//Util.consoleLog("type=%s", counter.getPIDSourceType().toString());
+			
 			if (encoder != null)
 			{
     			if (encoder.getPIDSourceType() == PIDSourceType.kRate)
@@ -310,6 +324,8 @@ public class Shooter
     				return get();
 			}
 			
+			Util.consoleLog("encoder and counter are null");
+
 			return 0;
 		}
 		

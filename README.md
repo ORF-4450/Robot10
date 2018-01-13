@@ -9,7 +9,7 @@ c:\users\yourusername\wpilib\user\java\lib. Download Robot10 and import into Ecl
 the lib directory and restart Eclipse. RobotLib will be integrated into your Robo10 project. After that, if
 RobotLib changes, just download the new RobotLib jars to the lib directory and refresh your Robot10 project.
 ****************************************************************************************************************
-Verision 10.3 (2018 update attempt)
+Version 10.3 (2018 update)
 
 * Update to 2018 WPILib libraries.
 

@@ -61,7 +61,7 @@ public class Devices
 	  public final static Talon			shooterMotor = new Talon(1);
 	  public final static Talon			indexerMotor = new Talon(2);
 	  public final static Talon			feederMotor = new Talon(3);
-	  public final static WPI_TalonSRX		gearMotor = new WPI_TalonSRX(7);
+	  public final static WPI_TalonSRX	gearMotor = new WPI_TalonSRX(7);
 
 	  // Shooter Wheel quad encoder is plugged into dio port 3 - orange=+5v blue=signal, dio port 4 - black=gnd yellow=signal. 
 	  //public Encoder		shooterEncoder = new Encoder(3, 4, true, EncodingType.k4X);
@@ -83,10 +83,18 @@ public class Devices
 		  RRCanTalon = new WPI_TalonSRX(4);
 		  LSlaveCanTalon = new WPI_TalonSRX(5);
 		  RSlaveCanTalon = new WPI_TalonSRX(6);
-		  
-		  Util.consoleLog("1");
-		  
-		// Configure CAN Talons with correct inversions.
+
+	      // Initialize CAN Talons and write status to log so we can verify
+	      // all the Talons are connected.
+	      InitializeCANTalon(LFCanTalon);
+	      InitializeCANTalon(LRCanTalon);
+	      InitializeCANTalon(RFCanTalon);
+	      InitializeCANTalon(RRCanTalon);
+	      InitializeCANTalon(LSlaveCanTalon);
+	      InitializeCANTalon(RSlaveCanTalon);
+	      
+	      // Configure CAN Talons with correct inversions.
+
 	      LFCanTalon.setInverted(true);
 		  LRCanTalon.setInverted(true);
 		  
@@ -95,13 +103,9 @@ public class Devices
 		  
 		  LSlaveCanTalon.setInverted(false);
 		  RSlaveCanTalon.setInverted(false);
-		  
-		  Util.consoleLog("2");
 	      
 	      // Turn on brake mode for CAN Talons.
 	      SetCANTalonBrakeMode(true);
-	      
-	      Util.consoleLog("3");
 	      
 	      // Setup the SpeedControllerGroups for the left and right set of motors.
 	      SpeedControllerGroup LeftGroup = new SpeedControllerGroup(LFCanTalon,LSlaveCanTalon,LRCanTalon);
@@ -135,22 +139,22 @@ public class Devices
 
 		  talon.clearStickyFaults(0);
 		  //talon.enableControl();
-		  //talon.changeControlMode(TalonControlMode.PercentVbus);
+		  //talon.changeControlMode(TalonControlMode.PercentVbus); //TODO Find PercentVbus
 	  }
 	  
 	  // Set neutral behavior of CAN Talons. True = brake mode, false = coast mode.
 
 	  public static void SetCANTalonBrakeMode(boolean brakeMode)
 	  {
+		  NeutralMode newMode;
+
 		  Util.consoleLog("brakes on=%b", brakeMode);
 		  
-		  NeutralMode newMode;
-		  if (brakeMode) {
+		  if (brakeMode) 
 			  newMode = NeutralMode.Brake;
-		  } else {
+		  else 
 			  newMode = NeutralMode.Coast;
-		  }
-		  
+
 		  LFCanTalon.setNeutralMode(newMode);
 		  LRCanTalon.setNeutralMode(newMode);
 		  RFCanTalon.setNeutralMode(newMode);
@@ -160,19 +164,19 @@ public class Devices
 	  }
 	  
 	  // Set CAN Talon voltage ramp rate. Rate is volts/sec and can be 2-12v.
-	  /*
-	  public static void SetCANTalonRampRate(double rate)
-	  {
-		  Util.consoleLog("%f", rate);
-		  
-		  LFCanTalon.setVoltageRampRate(rate);
-		  LRCanTalon.setVoltageRampRate(rate);
-		  RFCanTalon.setVoltageRampRate(rate);
-		  RRCanTalon.setVoltageRampRate(rate);
-		  LSlaveCanTalon.setVoltageRampRate(rate);
-		  RSlaveCanTalon.setVoltageRampRate(rate);
-	  }
-	  */
+	  // No 2018 equivalent.
+	  
+//	  public static void SetCANTalonRampRate(double rate)
+//	  {
+//		  Util.consoleLog("%f", rate);
+//		  
+//		  LFCanTalon.setVoltageRampRate(rate);
+//		  LRCanTalon.setVoltageRampRate(rate);
+//		  RFCanTalon.setVoltageRampRate(rate);
+//		  RRCanTalon.setVoltageRampRate(rate);
+//		  LSlaveCanTalon.setVoltageRampRate(rate);
+//		  RSlaveCanTalon.setVoltageRampRate(rate);
+//	  }
 	  
 	  // Return voltage and current draw for each CAN Talon.
 	  
