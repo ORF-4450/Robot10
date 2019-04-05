@@ -6,6 +6,7 @@ import java.lang.Math;
 import Team4450.Lib.*;
 import Team4450.Lib.JoyStick.*;
 import Team4450.Lib.LaunchPad.*;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -20,6 +21,7 @@ class Teleop
 	private Shooter				shooter;
 	private GearPickup			gearPickup;
 	private Vision				vision;
+	//private DigitalInput		hallSensor;
 	
 	// Constructor.
 	
@@ -38,6 +40,8 @@ class Teleop
 		gearPickup = new GearPickup(robot, this);
 				
 		vision = Vision.getInstance(robot);
+		
+		//hallSensor = new DigitalInput(8);
 	}
 
 	// Free all objects that need it.
@@ -156,7 +160,7 @@ class Teleop
 			
 			utilX = utilityStick.GetX();
 			
-			LCD.printLine(3, "distance=%.2f", robot.monitorDistanceThread.getRangeInches());
+			LCD.printLine(3, "distance=%.2f  hes=%b", robot.monitorDistanceThread.getRangeInches());	//, hallSensor.get());
 			LCD.printLine(4, "leftY=%.4f  rightY=%.4f  utilX=%.4f", leftY, rightY, utilX);
 			LCD.printLine(5, "encoder=%d,  shootenc=%d", Devices.encoder.get(), Devices.shooterEncoder.get());
 			//LCD.printLine(5, "gyroAngle=%d, gyroRate=%d", (int) robot.gyro.getAngle(), (int) robot.gyro.getRate());

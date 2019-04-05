@@ -19,7 +19,6 @@
 			<attribute name="javadoc_location" value="jar:file:/C:/Users/rcorn/wpilib/user/RobotLib/RobotLib.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="var" path="USERLIBS_DIR/navx_frc.jar"/>
 	<classpathentry kind="var" path="USERLIBS_DIR/CTRE_Phoenix-sources.jar"/>
 	<classpathentry kind="var" path="USERLIBS_DIR/CTRE_Phoenix.jar"/>
 	<classpathentry kind="var" path="wpiutil" sourcepath="wpiutil.sources"/>
